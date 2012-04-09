@@ -114,5 +114,28 @@ module.exports = {
 
         assert.isDefined(returned);
         assert.equal(emitted, returned);
+    },
+    'templateSubstitute substitutes' : function(beforeExit, assert) {
+        var template = '%SERVICE_DIR%/prog',
+            hash = {
+                SERVICE_DIR : '/path'
+            };
+        assert.equal('/path/prog', ctfd.templateSubstitute(template, hash));
+    },
+    'templateSubstitute substitutes several' : function(beforeExit, assert) {
+        var template = '%SERVICE_DIR%/prog %HOST%',
+            hash = {
+                SERVICE_DIR : '/path',
+                HOST : '192.168.1.1'
+            };
+        assert.equal('/path/prog 192.168.1.1', ctfd.templateSubstitute(template, hash));
+    },
+    'templateSubstitute substitutes several occurences' : function(beforeExit, assert) {
+        var template = '%SERVICE_DIR%/prog %HOST% %HOST%',
+            hash = {
+                SERVICE_DIR : '/path',
+                HOST : '192.168.1.1'
+            };
+        assert.equal('/path/prog 192.168.1.1 192.168.1.1', ctfd.templateSubstitute(template, hash));
     }
 };
