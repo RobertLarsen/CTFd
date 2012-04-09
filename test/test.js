@@ -100,5 +100,19 @@ module.exports = {
             factory = new ctfd.FlagFactory(nameLength, flagLength),
             d = factory.createFlag();
         assert.equal(nameLength, d.name.length);
+    },
+    'FlagFactory returned flag is emitted' : function(beforeExit, assert) {
+        var factory = new ctfd.FlagFactory(15, 64),
+            emitted = undefined,
+            returned = undefined;
+
+        factory.on('flag', function(f) {
+            emitted = f;
+        });
+
+        returned = factory.createFlag();
+
+        assert.isDefined(returned);
+        assert.equal(emitted, returned);
     }
 };
