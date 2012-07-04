@@ -92,7 +92,7 @@ module.exports = {
             nameLength = 15,
             factory = new ctfd.FlagFactory(nameLength, flagLength),
             d = factory.createFlag();
-        assert.equal(flagLength, d.flag.length);
+        assert.equal(flagLength, d.data.length);
     },
     'FlagFactory name length is as specicfied' : function(beforeExit, assert) {
         var flagLength = 64,
