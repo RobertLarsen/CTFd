@@ -1,5 +1,4 @@
-var server = require('net').createServer(),
-    repl = require('repl'),
+var repl = require('repl'),
     ctfd = require('CTFd');
     daemon = ctfd.createDaemon({
         port : 6600,
@@ -16,7 +15,7 @@ var server = require('net').createServer(),
         services : [
             {
                 name : 'Service 1',
-                manifest : '/home/robert/code/ctfd/services/SpeakersCorner/Manifest.json'
+                manifest : '/home/robert/code/CTF2/services/Phasebook/Manifest.json'
             }
         ]
     });
