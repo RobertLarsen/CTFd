@@ -1,7 +1,8 @@
 var repl = require('repl'),
-    ctfd = require('CTFd');
+    ctfd = require('../index');
     daemon = ctfd.createDaemon({
         port : 6600,
+        database : 'ctfd',
         teams : [
             {
                 name : 'Team 1',
@@ -15,7 +16,11 @@ var repl = require('repl'),
         services : [
             {
                 name : 'Service 1',
-                manifest : '/home/robert/code/CTF2/services/Phasebook/Manifest.json'
+                manifest : '/home/robert/code/ctfd/services/SomeService/Manifest.json'
+            },
+            {
+                name : 'Service 2',
+                manifest : '/home/robert/code/ctfd/services/SomeService/Manifest.json'
             }
         ]
     });
