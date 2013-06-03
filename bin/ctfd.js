@@ -3,6 +3,7 @@ var repl = require('repl'),
     daemon = ctfd.createDaemon({
         port : 6600,
         database : 'ctfd',
+        start : true,
         teams : [
             {
                 name : 'Team 1',
