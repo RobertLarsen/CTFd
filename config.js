@@ -21,7 +21,7 @@
         },
         {
             "name" : "Service 2",
-            "manifest" : "/home/robert/code/ctfd/services/SomeService/Manifest.json"
+            "manifest" : "services/SomeService/Manifest.json"
         }
     ]
 }
