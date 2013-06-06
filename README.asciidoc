@@ -170,7 +170,7 @@ Resources
 - http://www.overthewire.org[OverTheWire], binary hacking playground.
 - http://treasure.pwnies.dk/[Pwnies trasurehunt], fun fun trasure hunt.
 - http://www.try2hack.nl[Try2Hack] easy hacking.
-- http://www.backtrack-linux.org[Backtrack], the penetration testers best friend.
+- http://www.kali.org[Kali], the penetration testers best friend.
 - http://www.damnvulnerablelinux.org[Damn Vulnerable Linux], lots of vulnerable software to play with.
 - http://securitytube.net[SecurityTube.net], becase being told AND shown stuff is the way to go.
 
