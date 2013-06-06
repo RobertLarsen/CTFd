@@ -1,0 +1,113 @@
+Service developers guide
+========================
+Robert Larsen <robert@the-playground.dk>
+
+Introduction
+------------
+This guide will document how to develop services to be used during a CTF event. It will tell how
+the CTF daemon will use the service and check whether it is working or not.
+
+Definition
+----------
+So what is a service anyway?
+Well, a service is a program running on a machine operated by a team that participates in the CTF event.
+This program should be reachable from the network using TCP/UDP or any other protocol. It may simply be
+a sniffer listening for specially crafted packets but it should be possible to somehow talk to it without
+having a user account on the machine.
+
+Functionality
+-------------
+A service can offer any function that you can think of but it should be possible to somehow store a 64 byte
+hexadecimal string (a flag) on the service and somehow verify that it is there. Also, it should not be possible
+(without exploitation) to retrieve these flags or even verify that they are there. All flags are accompanied by
+a unique name consisting of 10 to 15 alphanumeric characters but this does not have to be stored.
+
+You can for example store these as credentials in a BLOG. Storing the flag name and flag could be done by
+creating a new user using the flag name as a username and the flag data as the password. Verifying that the flag
+is present could be done by attempting a login using the flag name and flag data as credentials.
+Note that the password in this case should not be encrypted or hashed as you should otherwise do with user
+credentials in a real live system because it should be possible for an attacker to retrieve the flags somehow.
+The defenders could then fix this by hashing the passwords.
+
+Configuring the CTF daemon
+--------------------------
+The CTF daemon must be able to use your service. It will plant flags and verify flag presense at regular intervals.
+You tell the daemon how to do this by providing it with a manifest file in the JSON format.
+
+A sample manifest file from the 'Barbershop' service looks like this:
+
+ {
+  "commands" : {
+   "plant_flag"  :
+    "%SERVICE_DIRECTORY%/check_barbershop -p http://%HOST%:8080/barbershop %FLAGID% %FLAG%",
+   "check_flag"  :
+    "%SERVICE_DIRECTORY%/check_barbershop -c http://%HOST%:8080/barbershop %FLAGID% %FLAG%",
+   "exploitable" :
+    "%SERVICE_DIRECTORY%/check_barbershop -e http://%HOST%:8080/barbershop"
+  }
+ }
+
+It contains a JavaScript object literal with three members defining commands: 'plant_flag', 'check_flag' and 'exploitable'.
+In the above example all three commands use the same executable 'check_barbershop' but this is not necessary. It is
+perfectly legal to have three different executables, and even just use an existing system binary such as 'lynx' and 'grep'.
+As can be seen certain template elements can be used which will be replaced by the CTF daemon. These are summarized in the
+following table:
+
+[options="header"]
+|==========================================================================
+| Template variable   | Description
+| %SERVICE_DIRECTORY% | Full path to where the mainfest file is located
+| %HOST%              | IP address or hostname for host to work on
+| %FLAGID%            | Name of flag (10 to 15 alphanumeric characters)
+| %FLAG%              | Flag data (64 hexadecimal characters)
+| %SERVICE_NAME%      | Name of the service (from the CTF daemon config file)
+|==========================================================================
+
+plant_flag
+~~~~~~~~~~
+This defines the command for planting a flag on a host.
+The command should exit with exit code 0 if the flag was successfully planted. Otherwise the exit code should be 1.
+
+check_flag
+~~~~~~~~~~
+This defines the command for verifying a flag on a host.
+The command should exit with exit code 0 if the flag was successfully verified. Otherwise the exit code should be 1.
+
+This command should also verify that the service works as it should so it might exersise more functionality than strictly necessary so that teams do not remove functionality that may be vulnerable. They should fix the vulnerabilities, not remove the functionality.
+
+exploitable
+~~~~~~~~~~~
+This defines the command for checking whether or not the service is exploitable on a host. This is currently not used
+but might be in the future. Having it doesn't hurt.
+The command should exit with exit code 0 if the flag could be successfully exploited. Otherwise the exit code should be 1.
+The command can output a string which the daemon can then include in its output, such as "Three out of five vulnerabilities still present".
+
+Documentation
+-------------
+Besides the code for the service and the commands for planting and verifying and a manifest file the service
+should have some documentation which describes how to install it and set it up. Also if some configuration
+should be unique for each team this should be described.
+
+The following should be present in the documentation:
+
+* Short description of what functionality the service provides.
+* What the bug(s) is and how it can be exploited.
+* How the bug can be fixed.
+* What software the service depends upon on the team servers.
+* What software the service depends upon on the CTF daemon server.
+* How to install and configure the service.
+* Whether or not some configuration details (a password for instance) should be changed for each team.
+* How to manually verify that the service is working.
+
+See the 'README' file in the 'Barbershop' service directory for an example.
+
+Example services
+----------------
+There are four example services included with the CTF daemon. They were used in the first actual CTF event in Denmark using this daemon.
+They are 'RabbitShare' which is the simplest and probably the easiest one to take a look at for how to write a service, 'Barbershop', 'SpeakersCorner' and 'TheQuotinator'.
+
+A fifth service is also included. This is called 'SomeService' but is actually only for debugging and playing with the CTF daemon.
+It stores flags locally on the CTF daemons filesystem making it easy to delete flags to make verifying them impossible,
+making directories unwritable to make delivering flags impossible and to read delivered flags for handing them back to the server.
+
+// vim: set syntax=asciidoc:
