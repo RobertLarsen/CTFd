@@ -1,0 +1,177 @@
+Capture The Flag
+================
+Robert Larsen <robert@the-playground.dk>
+
+Introduction
+------------
+Capture The Flag (hereafter called CTF) is a competition based on hacker techniques.
+In a CTF multiple teams compete against each other, each defending a virtual server that is
+running a series of buggy services. It is their task to find and fix these bugs before the
+other teams can use them to compromise the server. At the same time it is the task of the
+team to exploit the bugs on other teams servers to gain access to data or maybe even a
+shell which COULD lead even further to a full root compromise.
+
+Some CTF events have challenges besides the VM hacking which can provide a team with some extra
+points. Challenges could include:
+
+* Breaking weak encryption
+* Extracting files from PCAP dumps
+* Creating key generators for some binary
+* Solving trivia based on both knowlege and deduction
+** What is the 10 millionth Fibonacci number for instance
+* Solving a giant maze
+* Programming
+
+Overview
+--------
+The CTF daemon is the program in charge of the competition. It has three main objectives:
+
+* Store flags in each service on each teams server
+* Check the status of each service on each teams server
+* Receive captured flags from teams
+
+Based on the success of these three objectives the CTF daemon awards the teams with an amount
+of points.
+
+Flags ?
+~~~~~~~
+So what exactly is a flag ? Well, a flag consists of 64 random hex characters. Also each
+flag has a unique name consisting of 10 to 15 alphanumeric characters.
+A flag is stored in a service somehow and is later retrieved by the CTF daemon. These flags
+should be protected by the team. It should not be possible to get the flag or to even
+verify its presence without knowing the flags name (or in some cases both the name and the
+flag). However, people do make mistakes, and the developers of these services have made lots
+of them. These bugs will enable an attacker to do more than was intended like get contents
+of a database or run code.
+
+As an example consider a weblog (Blog). The owner of the blog has allowed users to comment
+on his writings but to comment you must register a user. In this case the CTF daemon stores
+a flag by creating a user account named from the name of the flag and with the actual flag
+as the password. The CTF daemon verifies the flag by trying to log in. If the login cannot
+be accomplished then the service is not running correctly.
+
+Points
+~~~~~~
+Points are awarded to a team in the following circumstances:
+
+* When a flag is successfully planted in a service
+* When a flag is successfully defended by a service (until the delivery of the next flag)
+* When a flags presense is successfully indicated to the CTF daemon when it asks for it
+* When the team steals a flag from a competing team and delivers it to the CTF daemon
+
+Not all these actions are rewarded equally.
+
+Stealing flags
+~~~~~~~~~~~~~~
+Other teams will try to lift the flag from the service. This might be possible using an
+http://en.wikipedia.org/wiki/SQL_injection[SQL injection] attack, or maybe
+http://en.wikipedia.org/wiki/Remote_File_Inclusion[remote file inclusion],
+http://en.wikipedia.org/wiki/Buffer_overflow[buffer overflows] or any other type of
+vulnerability.
+
+When a flag has been stolen from a competitors server it should be handed back to the
+CTF daemon as proof. Each stolen flag will give the team points. If a flag is stolen from a
+team, then that team will not be given points the next time that their service is checked
+even if it is running.
+
+Delivering flags
+~~~~~~~~~~~~~~~~
+The CTF daemon runs on the game server and is reachable via TCP on some port. The game
+administrator should let all teams know the IP address and port number to use.
+
+The protocol for talking to the daemon is very simple. First you have to tell it the name
+of your team, which must be known to it in advance. Thereafter you pass it one flag at a time.
+
+The following telnet session indicates how to deliver two flags:
+
+  $ telnet 192.168.0.1 6600
+  Trying 192.168.0.1...
+  Connected to 192.168.0.1.
+  Escape character is '^]'.
+  TEAM First team
+  0: Team name received
+  FLAG 211AFBF1C44229681FC9264633104AA6BC0A7FB43F658DDAC93EF742B52FFC5A
+  7: Flag no longer active
+  FLAG 8F6A98F060ECE29200E241587575DBA5A0038F3E01AE33033F670B0717CE264C
+  0: Flag captured
+  ^]
+  
+  telnet> quit
+  Connection closed.
+  $
+
+A small Bash shell script has been developed to assist you in delivering flags.
+It needs three parameters: IP or hostname of game server, port for CTF daemon and your team
+name. Then it will read flags from standard in and write them to the CTF daemon. When closing
+standard in you will be told how many flags were accepted:
+
+  $ ./flag_deliver 192.168.0.1 6600 "First team"
+  FCDC6483883F39B96F13425A58F23C7394FF88210503FCC5BE8F0D9568795ECE
+  21AE6F3E03FC522435E14BF3FB4F6F481E77DA5DE4937B8A16B51A816C0CC45D
+  8F6A98F060ECE29200E241587575DBA5A0038F3E01AE33033F670B0717CE264C
+  B2CE6A4AE50554E056CEED4F3BA754306FFDA37887EECCE13AF1730AEA23E534
+  ED1D6985A102389C2582F8FE8899BDF9A0609E54F662EFE04734F227BC069FF3
+  00238D6751AAE0FE03C10518607DAEEAE0D6D4E258D49C29FEBF3C89DF67E42C
+  <ctrl+d>
+  Flags delivered: 1
+  $
+
+Of course if you have scripted your exploit to output flags from the exploited servers you can just
+pipe the output from your exploit through the 'flag_deliver' program:
+
+  $ ./my_exploit 192.168.0.17 192.168.0.18 |./flag_deliver 192.168.0.1 6600 "First team"
+  Flags delivered: 1
+  $
+
+How do you win?
+---------------
+By being better than everybody else. Seriously the following short list helps:
+
+* Learn Linux/Unix systems administration
+** Because it is free and therefore the base of the virtual machines that you are to defend
+   and attack
+** So that you can find your way around the system
+** Because even the most wellcoded and bugfree software can be badly configured
+* Learn many programming languages
+** So that you can spot bugs
+** So that you can fix bugs
+** So that you can code exploits
+** So that you can code tools and backdoors
+* Learn exploitation techniques
+** So that you know how to exploit the bugs that you find
+* Work together
+** Do not waste time working on the same problems seperately.
+** Divide and conquer
+* Know the tools
+** Debuggers
+** Disassemblers
+** Static analysis tools
+** SQL injection tools
+** Web pentest
+** Port scanning
+* Make a plan
+** Because having a root shell and not knowing what to do with it sucks!
+* Be creative
+** After gaining access why not plant a program that captures all incoming flags and delivers them
+   to the CTF server...or other tricks
+* Practice, practice, practice
+** Because theory is not enough. Check out the <<X1,resources>>.
+
+[[X1]]
+Resources
+---------
+- http://www.owasp.org[Open Web Application Security Project]
+- http://www.the-playground.dk/index.php?page=wargames[My wargames] for hacking in
+  the comfort in your own home with no time pressure.
+- http://www.owasp.org/index.php/Category:OWASP_WebGoat_Project[WebGoat], a teaching tool
+  for learning web security (and insecurity).
+- http://jarlsberg.appspot.com[Jarlsberg], another vulnerable web application.
+- http://smashthestack.org/[SmashTheStack], binary hacking playground.
+- http://www.overthewire.org[OverTheWire], binary hacking playground.
+- http://treasure.pwnies.dk/[Pwnies trasurehunt], fun fun trasure hunt.
+- http://www.try2hack.nl[Try2Hack] easy hacking.
+- http://www.backtrack-linux.org[Backtrack], the penetration testers best friend.
+- http://www.damnvulnerablelinux.org[Damn Vulnerable Linux], lots of vulnerable software to play with.
+- http://securitytube.net[SecurityTube.net], becase being told AND shown stuff is the way to go.
+
+// vim: set syntax=asciidoc:
