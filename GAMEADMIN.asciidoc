@@ -1,0 +1,94 @@
+Game Administrators Guide
+=========================
+Robert Larsen <robert@the-playground.dk>
+
+Introduction
+------------
+This guide is meant as an introduction on how to configure the CTF daemon and how to
+run an event.
+
+CTF daemon
+----------
+The CTF daemon is implemented using Node.js and as such should run on more or less all
+platforms, however I have only tried it on Linux systems.
+
+It uses a configuration file which should follow the JSON notation and which is described
+in the following.
+
+The project contains a 'package.json' file which contains the dependencies so doing a
+'npm update' in the root directory of the project should install all required dependencies.
+
+Configuration file
+------------------
+As mentioned above the configuration file uses JSON notation. It is subdivided into
+multiple sections implemented as JSON objects. The following is a sample configuration
+file which will be explained further:
+
+ {
+     "database" : "ctfd",
+     "port" : 6600,
+     "max_execution_time" : 10000,
+     "plant_interval" : 600000,
+     "check_interval" : 60000,
+     "start" : true,
+     "teams" : [
+         { 
+             "name" : "First team",
+             "ip" : "192.168.122.101"
+         },
+         { 
+             "name" : "Second team",
+             "ip" : "192.168.122.102"
+         }
+     ],
+     "services" : [
+         {
+             "name"     : "SomeService",
+             "manifest" : "services/SomeService/Manifest.json"
+         }
+     ]
+ }
+
+database
+~~~~~~~~
+The daemon uses a MongoDb based database for storing flags and all information related to them.
+No flag information is kept in the memory of the daemon so if it crashes, nothing is really lost.
+Just restart the thing and it will go on planting and checking flags.
+
+port
+~~~~
+The deamon listens on all interfaces and on this port. This is where captured flags are delivered.
+
+max_execution_time
+~~~~~~~~~~~~~~~~~~
+If some command has run for this long, give up and fail whatever is tried. This affects flag planting
+and checking.
+
+plant_interval
+~~~~~~~~~~~~~~
+This is how often new flags are delivered in milliseconds.
+
+check_interval
+~~~~~~~~~~~~~~
+This is how often active flags are checked in milliseconds.
+
+start
+~~~~~
+If set to 'true' the daemon will start listening for captures and start planting and checking flags
+immediately. If it is false, it will only be configured and must be started manually.
+
+teams
+~~~~~
+This is an array of team objects. Each team consists of a name and the IP or hostname of the team.
+The team name is used for identifying the team when planting and checking flags and when a team
+tries to identify itself when delivering a flag.
+
+services
+~~~~~~~~
+This is a list of service objects.
+Each service object consists of a name and the path of its manifest file.
+The same manifest file can be used by several service objects, but the name must be unique.
+
+Using the same manifest for several services only makes sense when testing the daemon, but in that
+case it is also very useful. For more information about the manifest file read the SERVICE_DEV.asciidoc
+document.
