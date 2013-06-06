@@ -1,0 +1,31 @@
+<web-app>
+    <servlet>
+        <servlet-name>WeekData</servlet-name>
+        <servlet-class>WeekData</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>WeekData</servlet-name>
+        <url-pattern>/weekdata</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>MakeAppointment</servlet-name>
+        <servlet-class>MakeAppointment</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>MakeAppointment</servlet-name>
+        <url-pattern>/makeappointment</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ListMyAppointments</servlet-name>
+        <servlet-class>ListMyAppointments</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ListMyAppointments</servlet-name>
+        <url-pattern>/listmyappointments</url-pattern>
+    </servlet-mapping>
+</web-app>

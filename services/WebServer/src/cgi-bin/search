@@ -1,0 +1,29 @@
+#!/bin/bash
+    
+while test -n "${1}"; do
+    key=$(echo "${1}"|awk -F= '{print $1}')
+    val=$(echo "${1}"|awk -F= '{print $2}')
+    if [ "$key" = "name" ]; then
+        name="${val}"
+    fi
+    shift
+done
+
+if test -n "${name}"; then
+    description=$(grep -E "^${name}:" yp.db | sed 's/.*:\(.*\)/\1/g')
+    if test -n "${description}"; then
+        echo -e "<table border>"
+        echo -e "   <caption>Search result</caption>"
+        echo -e "   <tr>"
+        echo -e "       <td>Name:</td>"
+        echo -e "       <td>${name}</td>"
+        echo -e "   </tr>"
+        echo -e "   <tr>"
+        echo -e "       <td>Description:</td>"
+        echo -e "       <td>${description}</td>"
+        echo -e "   </tr>"
+        echo -e "</table>"
+    else
+        echo -e "No user named ${name}"
+    fi
+fi

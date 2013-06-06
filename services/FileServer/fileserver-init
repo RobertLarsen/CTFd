@@ -1,0 +1,25 @@
+#!/bin/bash
+# upstart-job
+
+FILESERVER_USER=fileserver
+FILESERVER_HOME=/var/services/FileServer
+FILESERVER_PORT=8899
+FILESERVER_UPLOADS=/tmp/uploads
+
+function start_fileserver(){
+    screen -dmS "FileServer" ${0} start_blocking
+}
+
+function start_fileserver_blocking(){
+    while true; do
+        sudo -u ${FILESERVER_USER} java -jar ${FILESERVER_HOME}/dist/FileService.jar ${FILESERVER_PORT} ${FILESERVER_UPLOADS}
+    done
+}
+
+COMMAND="$1"
+shift
+
+case $COMMAND in
+    start)   start_fileserver;;
+    start_blocking)   start_fileserver_blocking;;
+esac

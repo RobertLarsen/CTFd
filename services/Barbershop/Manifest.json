@@ -1,0 +1,7 @@
+{
+    "commands" : {
+        "plant_flag"  : "%SERVICE_DIRECTORY%/check_barbershop -p http://%HOST%:8080/barbershop %FLAGID% %FLAG%",
+        "check_flag"  : "%SERVICE_DIRECTORY%/check_barbershop -c http://%HOST%:8080/barbershop %FLAGID% %FLAG%",
+        "exploitable" : "%SERVICE_DIRECTORY%/check_barbershop -e http://%HOST%:8080/barbershop"
+    }
+}

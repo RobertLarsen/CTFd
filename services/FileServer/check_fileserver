@@ -1,0 +1,72 @@
+#!/bin/bash
+
+
+#$1 Host
+#$2 Port
+#$3 Flag name
+#$4 Flag data
+function PlantFlag(){
+    host=${1}
+    port=${2}
+    name=${3}
+    data=${4}
+    service_dir=$(dirname $0)
+    file=${name}.txt
+    echo ${data} > ${file}
+
+    java -classpath ${service_dir}/build client.Client ${host} ${port} put ${file}
+    code=$?
+    rm -f ${file}
+    test "${code}" == "0"
+}
+
+#$1 Host
+#$2 Port
+#$3 Flag name
+#$4 Flag data
+function CheckFlag(){
+    host=${1}
+    port=${2}
+    name=${3}
+    data=${4}
+    service_dir=$(dirname $0)
+    file=${name}.txt
+
+    java -classpath ${service_dir}/build client.Client ${host} ${port} get ${file} || exit 1
+    test "$(cat ${file})" == "${data}"
+    code=$?
+    rm -f ${file}
+    test "${code}" == "0"
+}
+
+#$1 Host
+#$2 Port
+function Exploitable(){
+    echo "Exploitability check not implemented"
+    false
+}
+
+function Help(){
+    echo "Usage: ${0} -p <host> <port> <flagname> <flagdata>"
+    echo "       ${0} -c <host> <port> <flagname> <flagdata>"
+    echo "       ${0} -e <host> <port>"
+    echo ""
+    echo "  -p  Plant flag"
+    echo "  -c  Check flag"
+    echo "  -e  Check exploitability"
+}
+
+case $1 in
+    "-p")
+        PlantFlag $2 $3 $4 $5
+        ;;
+    "-c")
+        CheckFlag $2 $3 $4 $5
+        ;;
+    "-e")
+        Exploitable $2 $3
+        ;;
+     *)
+        Help
+        ;;
+esac

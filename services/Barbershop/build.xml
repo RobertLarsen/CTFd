@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="Barbershop" default="war">
+    <property name="dir.deploy" value="/usr/share/jetty/webapps"/>
+    <property name="dir.dist" value="compiled"/>
+    <property name="dir.build" value="build"/>
+    <property name="dir.source" value="src"/>
+    <property name="dir.conf" value="conf"/>
+    <property name="dir.libraries" value="lib"/>
+    <property name="file.war" value="${dir.dist}/barbershop.war"/>
+    <property name="compile.debuglevel" value="lines,vars,source"/>
+    <property name="compile.debugging" value="on"/>
+
+    <path id="compile.classpath">
+        <fileset dir="${dir.libraries}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+    <path id="run.classpath">
+        <fileset dir="${dir.libraries}">
+            <include name="**/*.jar"/>
+        </fileset>
+        <pathelement path="${dir.build}"/>
+    </path>
+
+    <target name="init">
+        <mkdir dir="${dir.dist}"/>
+        <mkdir dir="${dir.build}"/>
+        <mkdir dir="${dir.source}"/>
+    </target>
+
+    <target name="compile" depends="init">
+        <javac debuglevel="${compile.debuglevel}" debug="${compile.debugging}" destdir="${dir.build}" includeantruntime="true">
+            <classpath refid="compile.classpath"/>
+            <compilerarg value="-Xlint"/>
+            <src path="${dir.source}"/>
+            <include name="**/*.java"/>
+        </javac>
+    </target>
+
+    <target name="war" depends="compile">
+        <war webxml="${dir.conf}/web.xml" destfile="${file.war}">
+            <classes dir="build"/>
+            <lib dir="lib" includes="**/*.jar"/>
+
+            <fileset dir="html" includes="**/*.html"/>
+            <fileset dir="html" includes="**/*.gif"/>
+            <fileset dir="html" includes="**/*.png"/>
+            <fileset dir="html" includes="**/*.jpg"/>
+            <fileset dir="html" includes="**/*.jpeg"/>
+            <fileset dir="html" includes="**/*.css"/>
+            <fileset dir="html" includes="**/*.js"/>
+        </war>
+    </target>
+
+    <target name="deploy" depends="war">
+        <copy file="${file.war}" todir="${dir.deploy}"/>
+    </target>
+
+    <target name="run" depends="compile">
+        <java classpathref="run.classpath" fork="true" classname="MakeAppointmentResult">
+        </java>
+    </target>
+
+    <target name="restart_jetty" depends="deploy">
+        <exec executable="sudo">
+            <arg line="/etc/init.d/jetty stop"/>
+        </exec>
+        <exec executable="sudo">
+            <arg line="/etc/init.d/jetty start"/>
+        </exec>
+    </target>
+</project>

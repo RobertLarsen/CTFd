@@ -1,0 +1,16 @@
+SomeService
+===========
+Robert Larsen <robert@the-playground.dk>
+
+Introduction
+------------
+The SomeService is designed to test the CTFDaemon. It is simply a script that can deliver and check
+flags without an actual VM and service to check against. It does this by storing flags in the filesystem
+under '/tmp/[host IP]/[flag name]'.
+This means that if '/tmp/[host IP]' is writable, then the flag can be delivered. To prevent the CTFDaemon
+from delivering flags to a certain IP, just 'chmod' the '/tmp/[host IP]' directory to disallow writing.
+A flag is available and correct if [flag data] is equal to the result of 'cat /tmp/[host IP]/[flag name]'.
+To indicate the unavailability of a flag just delete this file or write garbage to it.
+To exploit this service, just read the content of the files.
+
+// vim: set syntax=asciidoc:

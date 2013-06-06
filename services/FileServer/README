@@ -1,0 +1,79 @@
+HighLow
+=======
+Robert Larsen <robert@the-playground.dk>
+
+Introduction
+------------
+The FileServer is a vulnerable Java service used for a CTF event.
+Using a Java client you can connect to the file server, create a
+user account and upload or download files.
+
+Bug
+---
+The fileserver does not check the path of the file you wish to upload
+and it is possible to overwrite any file on the system, even the
+fileserver itself. You can also crash the server and thus make the
+run script relaunch it now with the overwritten jar file thus running
+possibly malicious code.
+
+To make it interesting the protocol is based on Javas object streams.
+
+Install
+-------
+1) Build an archive
+
+ $ ant archive
+ ...
+ $
+
+2) Copy archive to team server
+
+ $ scp FileServer.tar.gz robert@192.168.122.101:
+ FileServer.tar.gz                            100%   63KB  62.8KB/s   00:00
+ $
+
+3) Become root on team server
+
+ $ ssh robert@192.168.122.101
+ $ sudo -s
+ #
+
+4) Install needed packages
+
+ # apt-get -y install ant openjdk-6-jdk
+ ......
+ #
+
+5) Unpack in /var/services on team server
+
+ # mkdir /var/services
+ # cd /var/services
+ # tar xfz $HOME/FileServer.tar.gz
+ # cd FileServer
+
+6) Build jar
+
+ # ant
+ ....
+ #
+
+7) Add user for service
+
+ # useradd --system --home /var/services/FileServer --shell /bin/false fileserver
+
+8) Change owner
+
+ # chown -R fileserver.fileserver .
+
+9) Add init script
+
+ # mv fileserver-init /etc/init.d/fileserver
+ # ln -s ../init.d/fileserver /etc/rc2.d/S99fileserver
+ # chmod +x /etc/init.d/fileserver
+
+Game server
+-----------
+The check_fileserver script needs Java in the path and that the client code has been compiled.
+On Ubuntu the packages 'openjdk-6-jdk' and 'ant' will do the trick.
+
+// vim: set syntax=asciidoc:

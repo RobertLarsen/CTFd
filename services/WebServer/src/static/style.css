@@ -1,0 +1,15 @@
+body {
+    text-align: center;
+}
+
+.center_div {
+    text-align: center;
+    display: none;
+}
+
+table {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100px;
+}

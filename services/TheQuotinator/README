@@ -1,0 +1,149 @@
+RabbitShare
+===========
+Robert Larsen <robert@the-playground.dk>
+
+Introduction
+------------
+The Quotinator is a vulnerable service meant for a CTF event. It is written in C
+and listens on a TCP port. The users of this service can add quotes to the service
+and these quotes can later be retrieved. The protocol is pretty simple and uses
+telnet line endings.
+
+Using the protocol you can add quotes, get the number of quotes from a named
+author, get a numbered quote from a named author, list names of all authors if
+you are logged in as the administrator, change user type to administrator and exit.
+
+A session might look something like this:
+
+ $ telnet localhost 9999
+ Trying ::1...
+ Trying 127.0.0.1...
+ Connected to localhost.
+ Escape character is '^]'.
+ ADDQUOTE "Some Author" 13
+ Hello, World!
+ Quote received
+ QUOTES "Some Author"
+ 1
+ QUOTE "Some Author" 1
+ Hello, World!
+ QUIT
+ Connection closed by foreign host.
+ $
+
+Adding quotes
+~~~~~~~~~~~~~
+Adding quotes is done using the 'ADDQUOTE' command. The command is followed by the
+authors name in double quotes followed by the length of the quote followed by <CRLF>
+followed by the actual quote.
+
+Retrieving number of quotes from an author
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+You get the number of quotes for a specific author using the 'QUOTES' command. It is
+followed by the name of the author in double quotes followed by <CRLF>. The service
+will respond by telling how many quotes it knows of for the author.
+
+Retrieving a single quote from an author
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The 'QUOTE' command retrieves a single quote. It is followed by the authors name in
+double quotes followed by a number for which quote to retrieve followed by <CRLF>.
+
+Change to admin user
+~~~~~~~~~~~~~~~~~~~~
+Issue the 'ADMIN' command followed by the admin name in double quotes followed by
+the admin password in double quotes followed by <CRLF>.
+
+List names of all authors
+~~~~~~~~~~~~~~~~~~~~~~~~~
+Issue the 'AUTHORS' command followed by <CRLF>. The first line in the response will
+be the total number of authors. Following this is the list of author names.
+This command can only be called by administrators.
+
+Close down the connection
+~~~~~~~~~~~~~~~~~~~~~~~~~
+Issue the 'QUIT' command followed by <CRLF>.
+
+Bug
+---
+The programmer of this service has been sloppy with boundary checking so there are
+multiple buffer overflows which can be leveraged for privilege escalation and even for
+executing arbitrary code. The 'list_authors_exploit.rb' uses the buffer overflow for
+getting administrator rights in the service and listing author names. This can then
+be used for retrieving all quotes from all authors.
+
+Also, the password for the admin access is specified on the command line. This means
+that everybody can see it by running 'ps aux', maybe through another vulnerable service.
+
+Fix
+---
+Check for size of data before all 'memcpy' calls and substitute 'strncpy' for 'strcpy'.
+
+The password for the admin area can be hardcoded or read from a file.
+
+Install
+-------
+1) Build an archive
+
+ $ make TheQuotinator.tar.gz
+ tar czf TheQuotinator.tar.gz --exclude-vcs -C .. TheQuotinator/Makefile TheQuotinator/quotinator-init TheQuotinator/src/main.c
+ $
+
+2) Copy archive to team server
+
+ $ scp TheQuotinator.tar.gz robert@192.168.122.101:
+ TheQuotinator.tar.gz                          100% 4352     4.3KB/s   00:00
+ $
+
+3) Become root on team server
+
+ $ ssh robert@192.168.122.101
+ $ sudo -s
+ #
+
+4) Install needed packages
+
+ # apt-get -y install gcc
+
+5) Unpack in /var/services on team server
+
+ # mkdir /var/services
+ # cd /var/services
+ # tar xfz $HOME/TheQuotinator.tar.gz
+
+6) Build executable from source.
+
+ # cd TheQuotinator
+ # make
+ gcc -ggdb -Wall -c -D_DAEMONIZE -D_PARENT_SUPERVISION -o src/main.o src/main.c
+ gcc  -o quotinator src/main.o
+ #
+
+7) Install init script
+
+ # mv quotinator-init /etc/init.d/quotinator
+ # chmod 700 /etc/init.d/quotinator
+ # ln -s /etc/init.d/quotinator /etc/rc2.d/S99quotinator
+
+8) Change the password in /etc/init.d/quotinator for each team
+
+9) Start service
+
+ # /etc/init.d/quotinator start
+
+Game server
+-----------
+The flag deliver and check script requires the 'ruby' package to be installed on the game server.
+
+Verify
+------
+Add a quote
+
+ # telnet 192.168.122.101 666
+ Trying 192.168.122.101...
+ Connected to 192.168.122.101.
+ Escape character is '^]'.
+ ADDQUOTE "Some Guy" 13
+ Hello, World!
+ Quote received
+
+// vim: set syntax=asciidoc:

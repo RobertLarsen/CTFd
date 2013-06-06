@@ -1,0 +1,7 @@
+{
+    "commands" : {
+        "plant_flag"  : "%SERVICE_DIRECTORY%/check_phasebook -p %HOST% %FLAGID% %FLAG%",
+        "check_flag"  : "%SERVICE_DIRECTORY%/check_phasebook -c %HOST% %FLAGID% %FLAG%",
+        "exploitable" : "%SERVICE_DIRECTORY%/check_phasebook -e %HOST%"
+    }
+}

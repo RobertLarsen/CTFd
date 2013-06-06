@@ -1,0 +1,21 @@
+#!/bin/bash
+
+while test -n "${1}"; do
+    key=$(echo "${1}"|awk -F= '{print $1}')
+    val=$(echo "${1}"|awk -F= '{print $2}')
+    if [ "$key" = "name" ]; then
+        name="${val}"
+    elif [ "$key" = "description" ]; then
+        description="${val}"
+    fi
+    shift
+done
+
+if test -n "${name}" && test -n "${description}"; then
+    grep -Ev "^${name}:" yp.db > tmp
+    mv tmp yp.db
+    echo "${name}:${description}" >>yp.db
+    echo "${name} added"
+else
+    echo "Malformed data"
+fi

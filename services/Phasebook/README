@@ -1,0 +1,98 @@
+Phasebook
+=========
+Robert Larsen <robert@the-playground.dk>
+
+Introduction
+------------
+Phasebook is a social web site coded in PHP for a CTF event and thus riddled with bugs.
+
+Bug
+---
+The application contains both blind and inband SQL injections and also a local file inclusion
+vulnerability which is pretty severe as it is possible to upload images with PHP code embedded
+into them.
+
+Inband SQL injection 1
+~~~~~~~~~~~~~~~~~~~~~~
+The 'getUserById' method on the 'Database' class does not escape the id:
+
+ $sql = "SELECT username, gender FROM users WHERE id=$id";
+
+It can be reached from ?????????
+
+Inband SQL injection 2
+~~~~~~~~~~~~~~~~~~~~~~
+The 'getLatestUsers' method on the 'Database' class does not escape the max:
+
+ $sql = "SELECT id, username, gender FROM users ORDER BY id DESC LIMIT $max";
+
+It can be reached from ?????????
+
+Local file inclusion
+~~~~~~~~~~~~~~~~~~~~
+'index.php' contains the following lines:
+
+ ...
+ $page = (isset($_GET['p']) && file_exists('pages/' . $_GET['p']) ? $_GET['p'] : 'main');
+ ...
+ include_once "pages/" . $page;
+
+So any file can be included using 'http://server/phasebook/?p=../../../../etc/passwd'
+Code can be put on the server by embedding it in an image and uploading it as a profile image.
+That image can then be included and the code will be executed.
+
+Install
+-------
+1) Build an archive
+
+ $ make
+ tar czf Phasebook.tar.gz --exclude-vcs -C .. Phasebook/src Phasebook/db.sql
+ $
+
+2) Copy archive to team server
+
+ $ scp Phasebook.tar.gz robert@192.168.122.101:
+ Phasebook.tar.gz                         100%   17KB  17.2KB/s   00:00
+ $
+
+3) Become root on team server
+
+ $ ssh robert@192.168.122.101
+ $ sudo -s
+ #
+
+4) Install necessary packages on team server. Remember MySQL root password
+
+ # apt-get -y install mysql-server apache2 php5 php5-mysql
+ ......
+ #
+
+5) Unpack in /var/services on team server
+
+ # mkdir /var/services
+ # cd /var/services
+ # tar xfz $HOME/Phasebook.tar.gz
+ # cd Phasebook
+ # chown -R www-data.www-data .
+ # chmod ag+w src/images
+
+6) Configure Phasebook alias
+
+ # cat > /etc/apache2/sites-available/Phasebook <<EOF
+ Alias /Phasebook /var/services/Phasebook/src
+ EOF
+ # ln -s ../sites-available/Phasebook /etc/apache2/sites-enabled/001-Phasebook
+
+7) Build database
+
+ # mysql -u root -p < db.sql
+
+8) Restart Apache
+
+ # apache2ctl restart
+
+Game server
+-----------
+The check_phasebook script needs 'curl' to be installed on the server.
+
+// vim: set syntax=asciidoc:

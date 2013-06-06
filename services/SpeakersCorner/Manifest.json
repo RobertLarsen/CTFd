@@ -1,0 +1,7 @@
+{
+    "commands" : {
+        "plant_flag"  : "%SERVICE_DIRECTORY%/check_speakerscorner -p http://%HOST%/SpeakersCorner %FLAGID% %FLAG%",
+        "check_flag"  : "%SERVICE_DIRECTORY%/check_speakerscorner -c http://%HOST%/SpeakersCorner %FLAGID% %FLAG%",
+        "exploitable" : "%SERVICE_DIRECTORY%/check_speakerscorner -e http://%HOST%/SpeakersCorner"
+    }
+}

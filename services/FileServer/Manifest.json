@@ -1,0 +1,7 @@
+{
+    "commands" : {
+        "plant_flag"  : "%SERVICE_DIRECTORY%/check_fileserver -p %HOST% 8899 %FLAGID% %FLAG%",
+        "check_flag"  : "%SERVICE_DIRECTORY%/check_fileserver -c %HOST% 8899 %FLAGID% %FLAG%",
+        "exploitable" : "%SERVICE_DIRECTORY%/check_fileserver -e %HOST% 8899"
+    }
+}

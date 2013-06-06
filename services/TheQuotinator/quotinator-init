@@ -1,0 +1,25 @@
+#!/bin/bash
+# upstart-job
+
+QUOTINATOR_EXECUTABLE=quotinator
+QUOTINATOR_HOME=/var/services/TheQuotinator
+PORT=666
+ADMIN_NAME=admin
+ADMIN_PASSWORD=bjksafjr8jf3asbsdk4aa4
+
+function start_quotinator(){
+    $QUOTINATOR_HOME/$QUOTINATOR_EXECUTABLE $PORT $ADMIN_NAME $ADMIN_PASSWORD
+}
+
+function stop_quotinator(){
+    killall -9 $QUOTINATOR_EXECUTABLE
+}
+
+COMMAND="$1"
+shift
+
+case $COMMAND in
+    start)   start_quotinator;;
+    stop)    stop_quotinator;;
+    restart) stop_quotinator;start_quotinator;;
+esac

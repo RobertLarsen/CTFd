@@ -1,0 +1,87 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css" type="text/css" />
+        <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/themes/base/jquery-ui.css" type="text/css" media="all" />
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript"></script>  
+        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/jquery-ui.min.js" type="text/javascript"></script>
+        <script src="script.js" type="text/javascript"></script>  
+    </head>
+    <body>
+        <table class="title">
+            <tr>
+                <td>
+                    <img src="benjamin.jpg"/>
+                </td>
+                <td>
+                    <h1>Benjamin Barkers Barbershop</h1>
+                    <h2>The closest shave you'll ever have</h2>
+                    <h3>Schedule an appointment below</h3>
+                </td>
+            </tr>
+        </table>
+        <div>
+            <table id="schedule" class="schedule">
+                <caption><button onClick="PreviousWeek()">Previous week</button> <button onClick="ShowMyAppointments();">Show my appointments</button> <button onClick="NextWeek()">Next week</button></caption>
+                <thead>
+                    <tr>
+                        <td>
+                        </td>
+                        <td>
+                            Monday<br>
+                            <span id="mon"></span>
+                        </td>
+                        <td>
+                            Tuesday<br>
+                            <span id="tue"></span>
+                        </td>
+                        <td>
+                            Wednesday<br>
+                            <span id="wed"></span>
+                        </td>
+                        <td>
+                            Thursday<br>
+                            <span id="thu"></span>
+                        </td>
+                        <td>
+                            Friday<br>
+                            <span id="fri"></span>
+                        </td>
+                        <td>
+                            Saturday<br>
+                            <span id="sat"></span>
+                        </td>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div title="Make appointment" id="appointment">
+            <table class="dialog">
+                <tr>
+                    <td colspan="2" align="center" id="appointment_time"></td>
+                </tr>
+                <tr>
+                    <td>
+                        Username:
+                    </td>
+                    <td>
+                        <input style="width: 150px;" type="text" id="app_username" name="username"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Password:
+                    </td>
+                    <td>
+                        <input style="width: 150px;" type="password" id="app_password" name="password"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div title="Upcoming appointments" id="appointments">
+            <div id="appointments_list">
+            </div>
+        </div>
+    </body>
+</html>

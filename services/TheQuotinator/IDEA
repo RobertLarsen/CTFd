@@ -1,0 +1,34 @@
+C server program that accepts new quotes and lists quotes
+Protocol:
+
+send: QUOTES "author name"<CRLF>
+recv: 34
+
+send: QUOTE 1 "author name"<CRLF>
+recv: 9
+hello world
+
+send: AUTHORS<CRLF>
+recv: 37<CRLF>....
+
+send: ADDQUOTE "author name" 9<CRLF>
+hello world
+recv: ok
+
+send: ADMIN "username" "password"<CRLF>
+recv: ok
+
+send: ADMIN "bad username" "bad password"<CRLF>
+recv: failed
+
+struct {
+    void (*quotes_command)(...);
+    void (*quote_command)(...);
+    void (*addquote_command)(...);
+    void (*admin_command)(...);
+    void (*unknown_command)(...);
+    char command[20];
+};
+
+
+Buffer overflow allows for overwriting the function pointers allowing for arbitrary code execution or at least privilege escalation by setting the `authors` function pointer.

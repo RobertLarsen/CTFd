@@ -1,0 +1,96 @@
+Benjamin Barkers Barbershop
+===========================
+Robert Larsen <robert@the-playground.dk>
+
+Introduction
+------------
+Benjamin Barkers Barbershop is a Java based web application for managing appointments
+in a barbershop. Users can schedule an appointment in free slot in a time table using
+a username and password. The task is to steal these credentials.
+
+Bug
+---
+Behind the scenes are several Java servlets that search and update a MySQL database.
+The input for the SQL calls are very poorly checked and so contains lots of SQL
+injection vectors...some even inband.
+
+Exploitable URL:
+http://localhost:8080/barbershop/listmyappointments?time=0&user=bogus&pass=bogus' and 1=2 union select 1, 1, 1,  concat(name,char(64),password), name from users where '1'='1
+
+Fix
+---
+The Database class needs to either escape user inputs or be changed to use prepared
+statements in which case the database driver will take the responsibility of escaping
+the input.
+
+Extra assignment
+----------------
+Java is easily decompiled, so as an extra assignment the source code could be held back.
+The teams should still be able to extract the files from the 'war' file, decompile them,
+fix the bug, recompile and rebuild the archive.
+
+Install
+-------
+1) Build an archive
+
+ $ make
+ tar czf Barbershop.tar.gz --exclude-vcs -C .. Barbershop/build.xml Barbershop/src Barbershop/lib Barbershop/html Barbershop/conf Barbershop/db.sql
+ $
+
+2) Copy archive to team server
+
+ $ scp Barbershop.tar.gz robert@192.168.122.101:
+ Barbershop.tar.gz                            100% 1168KB   1.1MB/s   00:00
+ $
+
+3) Become root on team server
+
+ $ ssh robert@192.168.122.101
+ $ sudo -s
+ #
+
+4) Install needed packages (remember MySQL root users password)
+
+ # apt-get -y install openjdk-6-jdk jetty ant mysql-client mysql-server
+
+5) Make servlet API available to Ant
+
+ # ln -s /usr/share/java/servlet-api-2.5.jar /usr/share/ant/lib
+
+6) Configure Jetty to begin at startup
+
+ # sed -e 's/NO_START=1/NO_START=0/g' -e 's/#JETTY_HOST.*/JETTY_HOST=0.0.0.0/g' < /etc/default/jetty > out && mv out /etc/default/jetty
+
+
+7) Unpack in /var/services on team server
+
+ # mkdir /var/services
+ # cd /var/services
+ # tar xfz $HOME/Barbershop.tar.gz
+
+8) Build and install archive from source (MySQL root password is 'blar')
+
+ # cd Barbershop
+ # mysql -u root -pblar < db.sql
+ # ant deploy
+
+9) Restart server
+
+ # reboot
+
+10) Optionally delete the source code
+
+ # cd /root
+ # rm -rf /var/services/Barbershop
+ # rm -f $HOME/Barbershop.tar.gz
+
+Game server
+-----------
+The flag deliver and check script requires the 'curl' package to be installed on the game server.
+
+Verify
+------
+The installation is verified by visiting http://192.168.122.101:8080/barbershop
+and making an appointment.
+
+// vim: set syntax=asciidoc:

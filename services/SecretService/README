@@ -1,0 +1,128 @@
+SecretService
+===========
+Robert Larsen <robert@the-playground.dk>
+
+Introduction
+------------
+SecretService is a NoSQL key/value store with built in port knocking. You do not connect to it.
+It connects to you. You ask it to connect to you by sending a UDP packet to a nonbound port on
+the server. The SecretService process listens for outgoing ICMP destination port unreachable
+traffic, and if it contains a UDP packet with a special format, then it will try to connect
+back to the sender using a TCP connection after which the client can do updates and queries.
+
+ICMP packets are not send to local clients so you can only communicate with the service remotely.
+
+Flag names are stored as keys and flag data is stored as values. The administrator can iterate over
+the entire database. If you are not administrator you will need to know the key that you are looking
+for...or know how to exploit the vulnerabilities.
+
+A Ruby client has been developed that does all this for you, making a single request or update and
+then disconnects.
+
+Bug
+---
+The service contains three types of vulnerabilities: Inband SQL injection, privilege escalation and
+a heap and stack based buffer overflow.
+
+SQL injection
+~~~~~~~~~~~~~
+The server builds queries without escaping user specified arguments.
+For example in the 'database_get' function:
+
+    len = snprintf(sql, sizeof(sql) - 1, "select value from key_value where key='%s'", key);
+
+This makes it possible to dump the entire database one query at a time.
+
+Privilege escalation
+~~~~~~~~~~~~~~~~~~~~
+The initial UDP packet should contain the name and password for the administrator (if you want
+administrative privileges). If they match the credentials specified to the service then you will
+have administrative rights.
+
+This right is checked multiple places in the 'handle_user_data' function:
+
+            case ACTION_ITERATE:
+                if (user->is_admin == 1) {
+
+But in one place the value is actually updated due to a missing equal sign:
+
+            case ACTION_NUM:
+                if (user->is_admin = 1) {
+
+After having triggered this code you have administrative rights.
+
+Buffer overflow
+~~~~~~~~~~~~~~~
+The 'copy' function does not check the size of the destination buffer:
+
+ void copy(char * start, char * end, char * destination) {
+     int i = 0;
+     while (start + i != end) {
+         destination[i] = start[i];
+         i++;
+     }
+ }
+
+This can lead to denial of service and even code execution which is serious since the
+service runs with root privileges.
+DOS is somewhat mitigated by the crash recovery employed by the service, and code execution
+is complicated by ASLR, stack canaries and data execution prevention employed by the machine.
+
+Install
+-------
+1) Build an archive
+
+ $ make SecretService.tar.gz
+ tar czf SecretService.tar.gz --exclude-vcs -C .. SecretService/Makefile SecretService/secretservice-init SecretService/src/database.h SecretService/src/message.h SecretService/src/database.c SecretService/src/message.c SecretService/src/secretservice.c
+ $
+
+2) Copy archive to team server
+
+ $ scp SecretService.tar.gz robert@192.168.122.101:
+ SecretService.tar.gz                          100% 4352     4.3KB/s   00:00
+ $
+
+3) Become root on team server
+
+ $ ssh robert@192.168.122.101
+ $ sudo -s
+ #
+
+4) Install needed packages
+
+ # apt-get -y install gcc libsqlite3-dev libpcap-dev
+
+5) Unpack in /var/services on team server
+
+ # mkdir /var/services
+ # cd /var/services
+ # tar xfz $HOME/SecretService.tar.gz
+
+6) Build executable from source.
+
+ # cd SecretService
+ # make
+ cc -o secretservice -ggdb -lpcap -lsqlite3 -pthread -D_PARENT_SUPERVISION -D_DAEMONIZE src/database.c src/message.c src/secretservice.c
+ #
+
+7) Install init script
+
+ # mv secretservice-init /etc/init.d/secretservice
+ # chmod 700 /etc/init.d/secretservice
+ # ln -s /etc/init.d/secretservice /etc/rc2.d/S99secretservice
+
+8) Change the password in /etc/init.d/secretservice for each team
+
+9) Start service
+
+ # /etc/init.d/secretservice start
+
+
+Game server
+-----------
+The flag deliver and check script require the 'ruby' package on the game server.
+
+Verify
+------
+
+// vim: set syntax=asciidoc:

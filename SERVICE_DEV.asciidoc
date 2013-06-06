@@ -103,10 +103,10 @@ See the 'README' file in the 'Barbershop' service directory for an example.
 
 Example services
 ----------------
-There are four example services included with the CTF daemon. They were used in the first actual CTF event in Denmark using this daemon.
-They are 'RabbitShare' which is the simplest and probably the easiest one to take a look at for how to write a service, 'Barbershop', 'SpeakersCorner' and 'TheQuotinator'.
+There are nine example services included with the CTF daemon. They were used in the first two actual CTF event in Denmark using this daemon.
+Take a look at 'RabbitShare' which is the simplest and probably the easiest one to take a look at for how to write a service.
 
-A fifth service is also included. This is called 'SomeService' but is actually only for debugging and playing with the CTF daemon.
+A tenth service is also included. This is called 'SomeService' but is actually only for debugging and playing with the CTF daemon.
 It stores flags locally on the CTF daemons filesystem making it easy to delete flags to make verifying them impossible,
 making directories unwritable to make delivering flags impossible and to read delivered flags for handing them back to the server.
 

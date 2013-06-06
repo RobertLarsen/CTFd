@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="FileService" default="jars">
+    <property name="dir.dist" value="dist"/>
+    <property name="dir.build" value="build"/>
+    <property name="dir.source" value="src"/>
+    <property name="file.serverjar" value="${dir.dist}/FileService.jar"/>
+    <property name="file.clientjar" value="${dir.dist}/FileClient.jar"/>
+    <property name="file.tar" value="FileServer.tar.gz"/>
+    <property name="compile.debuglevel" value="lines,vars,source"/>
+    <property name="compile.debugging" value="on"/>
+
+    <target name="init">
+        <mkdir dir="${dir.build}"/>
+        <mkdir dir="${dir.dist}"/>
+    </target>
+
+    <target name="archive">
+        <tar destfile="${file.tar}"
+             basedir=".."
+             includes="FileServer/build.xml FileServer/fileserver-init FileServer/src/server/*.java FileServer/src/client/*.java FileServer/src/protocol/*.java"
+             compression="gzip">
+        </tar>
+    </target>
+
+    <target name="clean">
+        <delete dir="${dir.build}"/>
+        <delete dir="${dir.dist}"/>
+    </target>
+
+    <target name="run" depends="serverjar">
+        <java jar="${file.serverjar}" fork="true"/>
+    </target>
+
+    <target name="jars" depends="serverjar,clientjar"/>
+
+    <target name="serverjar" depends="compile">
+        <jar destfile="${file.serverjar}">
+            <fileset dir="${dir.build}" includes="server/**/*.class"/>
+            <fileset dir="${dir.build}" includes="protocol/**/*.class"/>
+            <manifest>
+                <attribute name="Main-Class" value="server.FileServer"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="clientjar" depends="compile">
+        <jar destfile="${file.clientjar}">
+            <fileset dir="${dir.build}" includes="client/**/*.class"/>
+            <fileset dir="${dir.build}" includes="protocol/**/*.class"/>
+            <manifest>
+                <attribute name="Main-Class" value="client.Client"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="compile" depends="init">
+        <javac includeantruntime="false" source="1.6" target="1.6" debuglevel="${compile.debuglevel}" debug="${compile.debugging}" destdir="${dir.build}">
+            <compilerarg value="-Xlint"/>
+            <src path="${dir.source}"/>
+            <include name="**/*.java"/>
+        </javac>
+    </target>
+</project>

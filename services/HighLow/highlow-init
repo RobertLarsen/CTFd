@@ -1,0 +1,24 @@
+#!/bin/bash
+# upstart-job
+
+HIGHLOW_EXECUTABLE=hlserver
+HIGHLOW_HOME=/var/services/HighLow
+HIGHLOW_DATABASE=${HIGHLOW_HOME}/db.sqlite3
+HIGHLOW_PORT=7777
+
+function start_highlow(){
+    ${HIGHLOW_HOME}/${HIGHLOW_EXECUTABLE} ${HIGHLOW_PORT} ${HIGHLOW_DATABASE}
+}
+
+function stop_highlow(){
+    killall -9 ${HIGHLOW_EXECUTABLE}
+}
+
+COMMAND="$1"
+shift
+
+case $COMMAND in
+    start)   start_highlow;;
+    stop)    stop_highlow;;
+    restart) stop_highlow;start_highlow;;
+esac

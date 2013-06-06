@@ -1,0 +1,6 @@
+#!/bin/bash
+
+USER=yellow
+DIRECTORY=/var/services/YellowPages
+
+cd ${DIRECTORY} && sudo -u ${USER} screen -dmS "YellowPages" /usr/local/bin/node ws.js

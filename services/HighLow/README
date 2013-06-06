@@ -1,0 +1,134 @@
+HighLow
+=======
+Robert Larsen <robert@the-playground.dk>
+
+Introduction
+------------
+HigLow is a vulnerable game service written in C meant for a CTF event.
+It uses a binary protocol built on TCP for the communication. All packets
+contain a header containing the packet type and the size of the payload.
+
+User data and scores are kept in a SQLite based database. The first time
+that the server is run an admin user is created with the name 'admin' and
+a random password.
+
+Bug
+---
+There are many bugs in the software, two of which are exploitable by
+remote users: an SQL injection, and a negative buffer index into a table
+of function pointers which can lead to the execution of arbitrary code.
+
+SQL injection
+~~~~~~~~~~~~~
+The authentication is done by building an SQL query using the following code:
+
+ snprintf(sql, sizeof(sql), "select * from users where name='%s' AND password='%s'", user->name, user->password);
+
+Both the username and the password are vulnerable to SQL injection. Using 'admin'
+for a username and the following password:
+
+ ' or '1'='
+
+...will log you in as the administrator. This password:
+
+ ' union select 666, 'nonexisting', 'geek', 1, 0, 0--
+
+...will give you a new, nonexisting user with admin rights. This user will not
+be added to the database so this will be more stealth.
+
+With admin rights you are able to list users and get user details such as passwords.
+
+Some of the information from the result of the authentication query are sent
+back to the user, but only integer types. These can however be used for an
+inband SQL injection.
+
+Negative integer
+~~~~~~~~~~~~~~~~
+In 'client.c' the following piece of code handles an incoming packet:
+
+ if (p->header.type < MSG_TYPE_LAST) {
+     if (p->header.type != MSG_TYPE_AUTH && !IS_AUTHENTICATED(client)) {
+         Packet return_packet;
+         send_packet(client, &return_packet, MSG_TYPE_NEED_AUTH, 0);
+     } else {
+         handlers[p->header.type](client, p);
+     }
+ }
+
+The 'type' is used as an index into a table, and it is checked, that the value
+is not too large. But it is not checked if it is negative.
+This can lead to a crash or even to the execution of arbitrary memory.
+
+Fix
+---
+The SQL injection can be fixed by escaping the usersupplied data appropriately.
+The SQLite API even has functionality for this, which should replace the 'sprintf'
+calls.
+
+The negative integer issue can be fixed by checking if the value is less than zero
+or by changing the type to an unsigned integer.
+
+Install
+-------
+1) Build an archive
+
+ $ make HighLow.tar.gz
+ tar czf HighLow.tar.gz --exclude-vcs -C .. HighLow/Makefile HighLow/highlow-init HighLow/src
+ $
+
+2) Copy archive to team server
+
+ $ scp HighLow.tar.gz robert@192.168.122.101:
+ HighLow.tar.gz                          100% 4352     4.3KB/s   00:00
+ $
+
+3) Become root on team server
+
+ $ ssh robert@192.168.122.101
+ $ sudo -s
+ #
+
+4) Install needed packages
+
+ # apt-get -y install make gcc libsqlite3-dev
+
+5) Unpack in /var/services on team server
+
+ # mkdir /var/services
+ # cd /var/services
+ # tar xfz $HOME/HighLow.tar.gz
+
+6) Build executable from source.
+
+ # cd HighLow
+ # make
+ cc -ggdb -lsqlite3 -ggdb -Wall -D_DAEMONIZE -D_PARENT_SUPERVISION -o hlserver src/client.c src/db.c src/main.c src/server.c src/util.c
+ #
+
+7) Install init script
+
+ # mv highlow-init /etc/init.d/highlow
+ # chmod 700 /etc/init.d/highlow
+ # ln -s /etc/init.d/highlow /etc/rc2.d/S99highlow
+
+8) Start service
+
+ # /etc/init.d/highlow start
+
+Game server
+-----------
+The flag deliver and check program requires the 'make', 'libsqlite3-dev' and 'gcc' package to be installed on the game server.
+Build the 'hlclient' target.
+
+Verify
+------
+Play a game:
+
+ ./hlclient -h 127.0.0.1 -o 7777 -u someuser -p somepassword --play
+ You are logged in as a normal user
+  1) admin - 0
+  2) someuser - 0
+ Round 1 - Number is 61
+ Is the next higher or lower [h/l]:
+
+// vim: set syntax=asciidoc:

@@ -1,0 +1,77 @@
+Speakers Corner
+===============
+Robert Larsen <robert@the-playground.dk>
+
+Introduction
+------------
+Speakers Corner is a vulnerable web service that provides users with a web log (blog). Users can
+register an account and start blogging or commenting on each others blogs.
+
+Bug
+---
+The service itself does not contain any known problems but the configuration does. All blog data is
+stored in a SQLite database and this database is stored in a location that is accessible via the web
+server.
+
+Fix
+---
+Move the database to a location inaccessible to the web users and update index.php or database.php
+to reflect this new location.
+
+Install
+-------
+1) Build an archive
+
+ $ make
+ tar czf SpeakersCorner.tar.gz --exclude-vcs --transform "s/src/SpeakersCorner/g" src
+ $
+
+2) Copy archive to team server
+
+ $ scp SpeakersCorner.tar.gz robert@192.168.122.101:
+ SpeakersCorner.tar.gz                         100%   17KB  17.2KB/s   00:00
+ $
+
+3) Become root on team server
+
+ $ ssh robert@192.168.122.101
+ $ sudo -s
+ #
+
+4) Install necessary packages on team server
+
+ # apt-get -y install apache2 php5 php5-sqlite
+ ......
+ #
+
+5) Unpack in /var/services on team server
+
+ # mkdir /var/services
+ # cd /var/services
+ # tar xfz $HOME/SpeakersCorner.tar.gz
+ # cd SpeakersCorner
+ # chown -R www-data.www-data .
+ # chmod g+w .
+
+6) Configure SpeakersCorner alias
+
+ # cat > /etc/apache2/sites-available/SpeakersCorner <<EOF
+ Alias /SpeakersCorner /var/services/SpeakersCorner
+ EOF
+ # ln -s ../sites-available/SpeakersCorner /etc/apache2/sites-enabled/001-SpeakersCorner
+
+7) Restart Apache
+
+ # apache2ctl restart
+
+Game server
+-----------
+The flag deliver and check script requires the 'curl' package to be installed on the game server.
+
+Verify
+------
+The installation is verified by visiting http://192.168.122.101/SpeakersCorner and creating a user
+and a blog entry. It should now be possible to retrieve the database by visiting
+http://192.168.122.101/SpeakersCorner/speaker.sqlite
+
+// vim: set syntax=asciidoc:

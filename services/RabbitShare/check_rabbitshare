@@ -1,0 +1,88 @@
+#!/bin/bash
+
+DATA_DIRECTORY=/tmp/RabbitShare
+
+#$1 Host
+#$2 Flag name
+#$3 Flag data
+function PlantFlag(){
+    TEAM_DIRECTORY=$DATA_DIRECTORY/$1
+    if ! test -d $TEAM_DIRECTORY; then
+        mkdir -p $TEAM_DIRECTORY
+    fi
+
+    boundary=$(CreateBoundary);
+    file=$(tempfile)
+    rm -f $file
+    echo -en "--$boundary\r\n" >>$file
+    echo -en "Content-Disposition: form-data; name=\"MAX_FILE_SIZE\"\r\n" >>$file
+    echo -en "\r\n" >>$file
+    echo -en "1048576\r\n" >>$file
+    echo -en "--$boundary\r\n" >>$file
+    echo -en "Content-Disposition: form-data; name=\"upload\"; filename=\"$2\"\r\n" >>$file
+    echo -en "Content-Type: text/plain\r\n" >>$file
+    echo -en "\r\n" >>$file
+    echo -en "$3\r\n" >>$file
+    echo -en "--$boundary--\r\n" >>$file
+
+    exitcode=0
+    downloadurl=$(curl --data-binary @$file --header "Referer: http://$1/RabbitShare/" --header "Content-Type: multipart/form-data; boundary=$boundary" http://$1/RabbitShare/index.php 2>&1 | grep "Download it from" | sed 's/.*Download it from <a href="\(.*\)">http.*/\1/g')
+    if test $? -eq 0 && test "$downloadurl" != ""; then
+        echo $downloadurl > $TEAM_DIRECTORY/$2
+        echo "Flag planted."
+    else
+        exitcode=1
+        echo "Service not working"
+    fi
+
+    rm -f $file
+    exit $exitcode
+}
+
+function CreateBoundary(){
+    boundary="-----------------------------"
+    for i in $(seq 1 29); do
+        boundary=$boundary$((RANDOM%10))
+    done
+    echo -n $boundary
+}
+
+#$1 Host
+#$2 Flag name
+#$3 Flag data
+function CheckFlag(){
+    TEAM_DIRECTORY=$DATA_DIRECTORY/$1
+    urlfile=$TEAM_DIRECTORY/$2
+    if test -f $urlfile; then
+        content=$(curl $(cat $urlfile) 2>/dev/null)
+        if test $? -eq 0 && test "$content" = "$3"; then
+            echo "Flag present."
+            exit 0
+        fi
+    fi
+    echo "Service not working"
+    exit 1
+}
+
+#$1 Host
+function Exploitable(){
+    if lynx --source http://$1/RabbitShare/upload/|grep "Index of" >/dev/null 2>&1; then
+        echo "Host is exploitable"
+        exit 0
+    else
+        echo "Host is not exploitable"
+        exit 1
+    fi
+}
+
+case $1 in
+    "-p")
+        PlantFlag $2 $3 $4
+        ;;
+    "-c")
+        CheckFlag $2 $3 $4
+        ;;
+    "-e")
+        Exploitable $2
+        ;;
+esac

@@ -1,0 +1,100 @@
+RabbitShare
+===========
+Robert Larsen <robert@the-playground.dk>
+
+Introduction
+------------
+RabbitShare is a vulnerable service that provides users with a file sharing server.
+The server accepts small text file uploads which are kept in a directory which is
+accessible to other users but they will need to know the URL of the file.
+
+Bug
+---
+Of course there is a problem. The source code does not have any problems as far as
+I know (it is ugly thou), but the web server (the Apache web server) is configured
+with directory listings turned on:
+
+ Alias /RabbitShare /var/services/RabbitShare
+ <Directory /var/services/RabbitShare>
+ 	Options Indexes
+ </Directory>
+
+This enables everybody to get a listing of all uploaded files on the server.
+
+The service may be used in attacking other services as you can upload all types of
+files. They will be renamed to have a '.txt' ending and may not be larger than one
+megabyte but this doesn't stop a local include exploit or OS command injection
+attack.
+
+Fix
+---
+The fix is simply to deny the Indexes option:
+
+ Alias /RabbitShare /var/services/RabbitShare
+ <Directory /var/services/RabbitShare>
+ 	Options -Indexes
+ </Directory>
+
+and restart the web server.
+
+Install
+-------
+1) Build an archive
+
+ $ make
+ tar czf RabbitShare.tar.gz --exclude-vcs --transform "s/src/RabbitShare/g" src
+ $
+
+2) Copy archive to team server
+
+ $ scp RabbitShare.tar.gz robert@192.168.122.101:
+ RabbitShare.tar.gz             100% 4007     3.9KB/s   00:00
+ $
+
+3) Become root on team server
+
+ $ ssh robert@192.168.122.101
+ $ sudo -s
+ #
+
+4) Install necessary packages on team server
+
+ # apt-get -y install apache2 php5
+ ......
+ #
+
+5) Unpack in /var/services on team server
+
+ # mkdir /var/services
+ # cd /var/services
+ # tar xfz $HOME/RabbitShare.tar.gz
+ # cd RabbitShare
+ # chown -R www-data.www-data .
+ # chmod g+w upload
+
+6) Configure RabbitShare alias
+
+ # cat > /etc/apache2/sites-available/RabbitShare <<EOF
+ Alias /RabbitShare /var/services/RabbitShare
+ <Directory /var/services/RabbitShare>
+ 	Options Indexes
+ </Directory>
+ EOF
+ # ln -s ../sites-available/RabbitShare /etc/apache2/sites-enabled/001-RabbitShare
+
+7) Restart Apache
+
+ # apache2ctl restart
+
+Game server
+-----------
+The flag deliver and check script requires the 'curl' package to be installed on the game server.
+
+Verify
+------
+The installation is verified by visiting http://192.168.122.101/RabbitShare
+and uploading a small text file. A file listing should be available at 
+http://192.168.122.101/RabbitShare/upload
+
+
+// vim: set syntax=asciidoc:

@@ -1,0 +1,67 @@
+#!/bin/bash
+
+function Help(){
+    echo "Usage:"
+    echo "   $1 -p <url> <flagname> <flagdata>   - Plant a flag"
+    echo "   $1 -c <url> <flagname> <flagdata>   - Check a flag"
+    echo "   $1 -e <url>                         - Check for exploitability"
+    echo ""
+    echo "Examples:"
+    echo "   $1 -p 'http://192.168.0.101/SpeakersCorner' SomeUsername SomePassword"
+    echo "   $1 -c 'http://192.168.0.101/SpeakersCorner' SomeUsername SomePassword"
+    echo "   $1 -e 'http://192.168.0.101/SpeakersCorner'"
+}
+
+#$1 URL
+#$2 Flag name
+#$3 Flag data
+function PlantFlag(){
+    url=$1
+    flagname=$2
+    flagdata=$3
+
+    post_file=$(tempfile)
+    echo "action=createuser&username=$flagname&password1=$flagdata&password2=$flagdata" >> $post_file
+    ( curl -v --data @$post_file "$url/index.php?page=newuser" 2>&1 | grep 'Location: index.php' >/dev/null ) && exitcode=0 || exitcode=1
+    rm -f $post_file
+    exit $exitcode
+}
+
+#$1 URL
+#$2 Flag name
+#$3 Flag data
+function CheckFlag(){
+    url=$1
+    flagname=$2
+    flagdata=$3
+
+    post_file=$(tempfile)
+    echo "action=login&username=$flagname&password=$flagdata" >> $post_file
+    ( curl -v --data @$post_file "$url/index.php" 2>&1 | grep "Logged in as $flagname" >/dev/null ) && exitcode=0 || exitcode=1
+    rm -f $post_file
+    exit $exitcode
+}
+
+#$1 URL
+function Exploitable(){
+    ( curl -I "$1/speaker.sqlite" 2>&1 | grep "200 OK" >/dev/null ) && exit 0 || exit 1
+}
+
+case $1 in
+    "-p")
+        if test -z $2 || test -z $3 || test -z $4; then
+            Help $0
+        else
+            PlantFlag $2 $3 $4
+        fi
+        ;;
+    "-c")
+        CheckFlag $2 $3 $4
+        ;;
+    "-e")
+        Exploitable $2
+        ;;
+       *)
+        Help $0
+        ;;
+esac

@@ -1,0 +1,101 @@
+YellowPages
+===========
+Robert Larsen <robert@the-playground.dk>
+
+Introduction
+------------
+YellowPages is a vulnerable web server written in Node.js with a web service written in
+HTML, JavaScript and Bash shell script.
+
+You can save a name of a person and a description of that person and then later find
+that description given the name.
+
+Bug
+---
+There is a bug in both the two CGI scripts and in the web server itself.
+
+CGI scripts
+~~~~~~~~~~~
+The 'add' script allows the user to execute any command with the privileges of the webserver.
+This is done using shell expansion. For example try adding a user named "Bob" with the following
+description: $(pwd)
+The description is then substituted for the present working directory.
+The 'search' script contains a similar bug. The name is not sanitized.
+
+Web server
+~~~~~~~~~~
+The web server has a directory traversal vulnerability which means that any file that the user
+running the server can read can be read through the service. Also the server supports a kind of
+CGI execution which together with the directory traversal vulnerability can execute any program
+with the privileges of the server. For instance, the following URL lists the content of the root
+directory:
+'http://192.168.122.101:8080/cgi-bin/../../../../../../ls?-l&/'
+
+Fix
+---
+Find the absolute path of the requested files and check if they lie under the directories
+that the user is allowed to see. Also sanitize the user input in the CGI scripts.
+
+Install
+-------
+1) Build an archive
+
+ $ make
+ tar czf YellowPages.tar.gz --exclude-vcs --transform "s/src/YellowPages/g" src
+ $
+
+2) Copy archive to team server
+
+ $ scp YellowPages.tar.gz robert@192.168.122.101:
+ YellowPages.tar.gz                            100%   63KB  62.8KB/s   00:00
+ $
+
+3) Become root on team server
+
+ $ ssh robert@192.168.122.101
+ $ sudo -s
+ #
+
+4) Install needed packages
+
+ # apt-get -y install libssl-dev g++
+ ......
+ #
+
+5) Build and install Node.js
+
+ # cd /usr/src
+ # wget -q http://nodejs.org/dist/node-v0.4.12.tar.gz
+ # tar xfz node-v0.4.12.tar.gz
+ # cd node-v0.4.12/
+ # ./configure --prefix=/usr/local && make && make install
+ ......
+ #
+
+6) Unpack in /var/services on team server
+
+ # mkdir /var/services
+ # cd /var/services
+ # tar xfz $HOME/YellowPages.tar.gz
+ # cd YellowPages
+
+7) Add user for service
+
+ # useradd --system --home /var/services/YellowPages --shell /bin/false yellow
+
+8) Add init script
+
+ # mv init-script /etc/init.d/yellowpages
+ # ln -s ../init.d/yellowpages /etc/rc2.d/S98yellowpages
+ # chmod +x /etc/init.d/yellowpages
+
+Game server
+-----------
+The flag deliver and check script require the 'lynx' package on the game server.
+
+Verify
+------
+The installation is verified by visiting http://192.168.122.101:8080/
+and adding a description of a user.
+
+// vim: set syntax=asciidoc:

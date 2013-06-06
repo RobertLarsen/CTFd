@@ -1,0 +1,7 @@
+{
+    "commands" : {
+        "plant_flag"  : "%SERVICE_DIRECTORY%/hlclient --plant --host %HOST% --port 7777 --user %FLAGID% --pass %FLAG%",
+        "check_flag"  : "%SERVICE_DIRECTORY%/hlclient --check --host %HOST% --port 7777 --user %FLAGID% --pass %FLAG%",
+        "exploitable" : "%SERVICE_DIRECTORY%/hlclient --exploitable --host %HOST% --port 7777"
+    }
+}

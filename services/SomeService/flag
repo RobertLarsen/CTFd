@@ -1,0 +1,36 @@
+#!/bin/bash
+
+ACTION=$1
+HOST=$2
+FLAGID=$3
+FLAG=$4
+SERVICE_NAME=$5
+
+if ! test -d "/tmp/$HOST"; then
+    mkdir "/tmp/$HOST"
+fi
+
+if ! test -d "/tmp/$HOST/$SERVICE_NAME"; then
+    mkdir "/tmp/$HOST/$SERVICE_NAME"
+fi
+
+if [ "$ACTION" = "-p" ]; then
+    echo $FLAG > "/tmp/$HOST/$SERVICE_NAME/$FLAGID" 2>/dev/null
+    result=$?
+    test $result -eq 0 && echo "Flag planted." || echo "Service seem down."
+    exit $result
+else
+    if ! test -f "/tmp/$HOST/$SERVICE_NAME/$FLAGID"; then
+        echo "Service seems down."
+        exit 1
+    else
+        fl=$(cat "/tmp/$HOST/$SERVICE_NAME/$FLAGID")
+        if [ $fl != $FLAG ]; then
+            echo "Wrong flag"
+            exit 2
+        else
+            echo "Flag found"
+            exit 0
+        fi
+    fi
+fi
