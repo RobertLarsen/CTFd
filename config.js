@@ -1,9 +1,10 @@
 {
+    "status_port" : 8800,
     "port" : 6600,
     "database" : "ctfd",
     "start" : true,
-    "check_interval" : 10000,
-    "plant_interval" : 30000,
+    "check_interval" : 2000,
+    "plant_interval" : 10000,
     "teams" : [
         {
             "name" : "Team 1",
