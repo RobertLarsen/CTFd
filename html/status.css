@@ -1,0 +1,27 @@
+table {
+    border-collapse: collapse;
+}
+
+td {
+    border: 1px solid black;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.strong {
+    background-color: black;
+    color: white;
+    font-weight: bold;
+}
+
+.yellow {
+    background-color: yellow;
+}
+
+.red {
+    background-color: red;
+}
+
+.green {
+    background-color: green;
+}
