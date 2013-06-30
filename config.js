@@ -1,4 +1,5 @@
 {
+    "scores_port" : 8900,
     "status_port" : 8800,
     "port" : 6600,
     "database" : "ctfd",
@@ -17,11 +18,15 @@
     ],
     "services" : [
         {
-            "name" : "Service 1",
+            "name" : "Phasebook",
             "manifest" : "services/SomeService/Manifest.json"
         },
         {
-            "name" : "Service 2",
+            "name" : "Secret Service",
+            "manifest" : "services/SomeService/Manifest.json"
+        },
+        {
+            "name" : "Yellow Pages",
             "manifest" : "services/SomeService/Manifest.json"
         }
     ]

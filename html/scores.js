@@ -18,6 +18,12 @@ $(function() {
                 }
             }
         );
+
+        $.plot(
+            "#steals_losses_per_team",
+            data.steals_losses_per_team.data, 
+            data.steals_losses_per_team.options
+        );
     };
 
     var UpdateGraphs = function() {

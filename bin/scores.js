@@ -72,9 +72,99 @@ TotalFlagSteals.prototype.data = function() {
     return this.data_;
 };
 
+var StealsLossesPerTeam = function() {
+    this.data_ = {};
+};
+
+StealsLossesPerTeam.prototype.name = function() {
+    return "steals_losses_per_team";
+};
+
+StealsLossesPerTeam.prototype.update = function(flag) {
+    var that = this;
+
+    if (this.data_[flag.team] === undefined) {
+        this.data_[flag.team] = {
+            stolen : 0,
+            lost : 0
+        };
+    }
+
+    this.data_[flag.team].lost += flag.captures.length;
+
+    _.forEach(flag.captures, function(capture) {
+        if (that.data_[capture.team] === undefined) {
+            that.data_[capture.team] = {
+                stolen : 0,
+                lost : 0
+            };
+        }
+        that.data_[capture.team].stolen++;
+    });
+};
+
+StealsLossesPerTeam.prototype.data = function() {
+    var data = this.data_,
+        teams = _.keys(data),
+        res = [
+            {
+                label : 'Stolen',
+                data : (function() {
+                    var a = [], idx = 0;
+                    _.forEach(teams, function(t) {
+                        a.push([
+                            idx, data[t].stolen
+                        ]);
+                        idx += 3;
+                    });
+                    return a;
+                })(),
+                bars : {
+                    show : true
+                }
+            },
+            {
+                label : 'Lost',
+                data : (function() {
+                    var a = [], idx = 1;
+                    _.forEach(teams, function(t) {
+                        a.push([
+                            idx, data[t].lost
+                        ]);
+                        idx += 3;
+                    });
+                    return a;
+                })(),
+                bars : {
+                    show : true
+                }
+            }
+        ],
+        xaxis = {
+            ticks : (function() {
+                var a = [], idx = 1;
+                _.forEach(teams, function(t) {
+                    a.push([
+                        idx, t
+                    ]);
+                    idx += 3;
+                });
+                return a;
+            })()
+        };
+
+    return {
+        options : {
+            xaxis : xaxis,
+        },
+        data : res
+    }
+};
+
 router.get('/scores.json', function(req, res) {
     var result = {},
         dataObjects = [
+            new StealsLossesPerTeam(),
             new StealsPerService()
         ];
 
