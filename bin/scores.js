@@ -27,7 +27,8 @@ StealsPerService.prototype.update = function(flag) {
 
 StealsPerService.prototype.data = function() {
     var res = [],
-        data = this.data_;
+        data = this.data_,
+        counter = 0;
     _.chain(this.data_).keys().forEach(function(key) {
         res.push({
             label : key,
@@ -35,7 +36,23 @@ StealsPerService.prototype.data = function() {
             bars : { show : true }
         });
     });
-    return res;
+    return {
+        options : {
+            xaxis : {
+                ticks : _.chain(res)
+                         .map(function(d) {
+                             return [
+                                (counter++) + 0.5,
+                                d.label
+                             ];
+                         }).value()
+            },
+            legend : {
+                show : false
+            }
+        },
+        data : res
+    };
 };
 
 var TotalFlagSteals = function() {
