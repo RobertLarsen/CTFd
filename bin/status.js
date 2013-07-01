@@ -8,19 +8,18 @@ var http = require('http'),
     ),
     db = mongojs.connect(conf.database, ['flags']);
 
-router.get('/status.html', function(req, res) {
-    res.writeHead(200, {'Content-Type' : 'text/html'});
-    res.end(fs.readFileSync('html/status.html'));
-});
-
-router.get('/status.js', function(req, res) {
-    res.writeHead(200, {'Content-Type' : 'application/javascript'});
-    res.end(fs.readFileSync('html/status.js'));
-});
-
-router.get('/status.css', function(req, res) {
-    res.writeHead(200, {'Content-Type' : 'text/css'});
-    res.end(fs.readFileSync('html/status.css'));
+_.forEach(fs.readdirSync(conf.web.document_root), function(file) {
+    var ext = file.substr(file.lastIndexOf('.') + 1);
+    router.get('/' + file, function(req, res) {
+        res.writeHead(200, {
+            'Content-Type' : {
+                'js' : 'application/javascript',
+                'css' : 'text/css',
+                'html' : 'text/html'
+            }[ext]
+        });
+        res.end(fs.readFileSync(conf.web.document_root + '/' + file));
+    });
 });
 
 require('../lib/statuswebpage')(router, db);

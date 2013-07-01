@@ -9,19 +9,18 @@ var http = require('http'),
     ),
     db = mongojs.connect(conf.database, ['flags']);
 
-router.get('/scores.html', function(req, res) {
-    res.writeHead(200, {'Content-Type' : 'text/html'});
-    res.end(fs.readFileSync('html/scores.html'));
-});
-
-router.get('/scores.js', function(req, res) {
-    res.writeHead(200, {'Content-Type' : 'application/javascript'});
-    res.end(fs.readFileSync('html/scores.js'));
-});
-
-router.get('/scores.css', function(req, res) {
-    res.writeHead(200, {'Content-Type' : 'text/css'});
-    res.end(fs.readFileSync('html/scores.css'));
+_.forEach(fs.readdirSync(conf.web.document_root), function(file) {
+    var ext = file.substr(file.lastIndexOf('.') + 1);
+    router.get('/' + file, function(req, res) {
+        res.writeHead(200, {
+            'Content-Type' : {
+                'js' : 'application/javascript',
+                'css' : 'text/css',
+                'html' : 'text/html'
+            }[ext]
+        });
+        res.end(fs.readFileSync(conf.web.document_root + '/' + file));
+    });
 });
 
 require('../lib/scoreswebpage')(router, db);
