@@ -1,14 +1,19 @@
 $(function() {
-    var ShowData = function(data) {
-        _.chain(data)
-         .keys()
-         .forEach(function(name) {
-             $.plot('#' + name,
-                    data[name].data,
-                    data[name].options
-             );
-         });
-    };
+    var lastData = null,
+        large = null,
+        ShowData = function(data) {
+            lastData = data;
+            if (data) {
+                _.chain(data)
+                 .keys()
+                 .forEach(function(name) {
+                     $.plot('.' + name,
+                            data[name].data,
+                            data[name].options
+                     );
+                });
+            }
+        };
 
     var UpdateGraphs = function() {
         $.ajax('/scores.json', {
