@@ -8,28 +8,6 @@ var http = require('http'),
     ),
     db = mongojs.connect(conf.database, ['flags']);
 
-router.get('/status.json', function(req, res) {
-    var result = {};
-
-    res.writeHead(200, {'Content-Type' : 'application/json'});
-    db.flags.find({active:true}).forEach(function(err, doc) {
-        if (err === null) {
-            if (doc) {
-                if (result[doc.team] === undefined) {
-                    result[doc.team] = {};
-                }
-                result[doc.team][doc.service] = {
-                    delivered : doc.delivered,
-                    check : (doc.checks.length === 0 ? null : doc.checks[doc.checks.length - 1].result),
-                    captured : doc.captures.length > 0
-                };
-            } else {
-                res.end(JSON.stringify(result, null, 4));
-            }
-        }
-    });
-});
-
 router.get('/status.html', function(req, res) {
     res.writeHead(200, {'Content-Type' : 'text/html'});
     res.end(fs.readFileSync('html/status.html'));
@@ -45,4 +23,6 @@ router.get('/status.css', function(req, res) {
     res.end(fs.readFileSync('html/status.css'));
 });
 
-http.createServer(router).listen(conf.status_port);
+require('../lib/statuswebpage')(router, db);
+
+http.createServer(router).listen(conf.web.port);
