@@ -1,9 +1,13 @@
 {
+    "web" : {
+        "port" : 8900,
+        "document_root" : "./html"
+    },
     "scores_port" : 8900,
     "status_port" : 8800,
     "port" : 6600,
     "database" : "ctfd",
-    "start" : true,
+    "start" : false,
     "check_interval" : 2000,
     "plant_interval" : 10000,
     "teams" : [
