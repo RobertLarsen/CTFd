@@ -23,6 +23,6 @@ _.forEach(fs.readdirSync(conf.web.document_root), function(file) {
     });
 });
 
-require('../lib/scoreswebpage')(router, db);
+require('../lib/scoreswebpage')(router, db, conf.points);
 
 http.createServer(router).listen(conf.web.port);

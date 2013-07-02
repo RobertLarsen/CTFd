@@ -10,6 +10,12 @@
     "start" : false,
     "check_interval" : 2000,
     "plant_interval" : 10000,
+    "points" : {
+        "deliver" : 1,
+        "capture" : 2,
+        "defend" : 1,
+        "check" : 1
+    },
     "teams" : [
         {
             "name" : "Team 1",
