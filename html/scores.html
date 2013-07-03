@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <title>Capture The Flag - Status</title>
+        <title>Capture The Flag - Scoreboard</title>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
         <script src="/jquery.flot.min.js"></script>
@@ -12,7 +12,20 @@
         <link type="text/css" rel="stylesheet" href="/scores.css"/>
     </head>
     <body>
-        <h1>Scores</h1>
+        <h1>Scoreboard</h1>
+        <div>
+            <h2>Current scores</h2>
+            <table class="table_scores">
+                <thead>
+                    <tr>
+                        <td>Team</td>
+                        <td>Score</td>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
         <div>
             <h2>Score over time</h2>
             <div class="plot score_over_time"></div>

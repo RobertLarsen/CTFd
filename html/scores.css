@@ -3,3 +3,27 @@
     width: 1200px;
     height: 800px;
 }
+
+.table_scores {
+    border-collapse: collapse;
+}
+
+.table_scores thead {
+    background-color: black;
+    color: white;
+    text-align: center;
+    font-weight: bold;
+}
+
+.table_scores tbody {
+    border: 1px solid black;
+}
+
+.table_scores tbody tr:nth-child(even) {
+    background-color: lightgray;
+}
+
+.table_scores td {
+    margin: 5px;
+    padding: 5px;
+}
