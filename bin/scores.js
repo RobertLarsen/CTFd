@@ -7,7 +7,7 @@ var http = require('http'),
         fs.readFileSync(process.argv.length > 2 ? 
             process.argv[2] : 'config.js', 'utf-8')
     ),
-    db = mongojs.connect(conf.database, ['flags']);
+    db = mongojs.connect(conf.database, ['flags','challenges']);
 
 _.forEach(fs.readdirSync(conf.web.document_root), function(file) {
     var ext = file.substr(file.lastIndexOf('.') + 1);
