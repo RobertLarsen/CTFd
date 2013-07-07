@@ -26,8 +26,16 @@
 .table_scores td {
     margin: 5px;
     padding: 5px;
+    text-align: center;
 }
 
 .table_scores tbody tr td:nth-child(1) {
     border-right: 1px solid black;
+    font-weight: bold;
+    text-align: right;
+}
+
+.table_scores tbody tr td:nth-child(7) {
+    border-left: 1px solid black;
+    font-weight: bold;
 }
