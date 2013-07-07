@@ -27,3 +27,7 @@
     margin: 5px;
     padding: 5px;
 }
+
+.table_scores tbody tr td:nth-child(1) {
+    border-right: 1px solid black;
+}

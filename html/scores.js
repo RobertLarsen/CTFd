@@ -1,9 +1,9 @@
 $(function() {
-    var lastData = null,
-        large = null,
-        ShowData = function(data) {
-            var tableData = '';
-            lastData = data;
+    var ShowData = function(data) {
+            var tableData = '',
+            T = function(text) {
+                return '<td>' + $('<div>').text(text).html() + '</td>';
+            };
             if (data) {
                 _.chain(data.graphs)
                  .keys()
@@ -14,8 +14,9 @@ $(function() {
                      );
                 });
 
-                _.forEach(data.table, function(entry) {
-                    tableData += '<tr><td>' + $('<div>').text(entry.team).html() + '</td><td>' + entry.score + '</td></tr>';
+                _.chain(data.table).keys().forEach(function(team) {
+                    var entry = data.table[team];
+                    tableData += '<tr>' + T(team) + T(entry.deliver) + T(entry.defend) + T(entry.check) + T(entry.capture) + T(entry.challenge) + T(entry.points) + '</tr>';
                 });
 
                 $('.table_scores tbody').html(tableData);
