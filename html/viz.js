@@ -72,7 +72,8 @@ $(function() {
     TeamViz.prototype.alignServices_ = function() {
         var distanceFromCenter = this.radius + this.services[0].radius + 2,
             distanceBetweenServices = this.services[0].radius * 2 + 3,
-            angle = Math.acos(((distanceFromCenter * distanceFromCenter * 2) - (distanceBetweenServices * distanceBetweenServices)) / (2 * distanceFromCenter * distanceFromCenter)),
+            doubleDistanceSquared = distanceFromCenter * distanceFromCenter * 2,
+            angle = Math.acos((doubleDistanceSquared - (distanceBetweenServices * distanceBetweenServices)) / doubleDistanceSquared),
             totalAngle = angle * (this.services.length - 1),
             startAngle = (Math.PI - totalAngle) / 2,
             i, s;
