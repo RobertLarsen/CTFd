@@ -17,27 +17,23 @@
         "check" : 1
     },
     "teams" : [
-        {
-            "name" : "Team 1",
-            "host" : "192.168.0.1"
-        },
-        {
-            "name" : "Team 2",
-            "host" : "192.168.0.2"
-        }
+        { "name" : "Ring0", "host" : "localhost" },
+        { "name" : "Darkside Inc", "host" : "localhost" },
+        { "name" : "Tykhax", "host" : "localhost" },
+        { "name" : "def4ult", "host" : "localhost" },
+        { "name" : "Pwnies", "host" : "localhost" },
+        { "name" : "Hack n Slash", "host" : "localhost" },
+        { "name" : "EuroNOP", "host" : "localhost" },
+        { "name" : "Dont Mind Us", "host" : "localhost" },
+        { "name" : "Secure Noodle Squad", "host" : "localhost" },
+        { "name" : "Majskinke", "host" : "localhost" }
     ],
     "services" : [
-        {
-            "name" : "Phasebook",
-            "manifest" : "services/SomeService/Manifest.json"
-        },
-        {
-            "name" : "Secret Service",
-            "manifest" : "services/SomeService/Manifest.json"
-        },
-        {
-            "name" : "Yellow Pages",
-            "manifest" : "services/SomeService/Manifest.json"
-        }
+        { "name" : "HighLow", "manifest" : "/home/robert/code/CTF3/services/SomeService/Manifest.json" },
+        { "name" : "Phasebook", "manifest" : "/home/robert/code/CTF3/services/SomeService/Manifest.json" },
+        { "name" : "SecretService", "manifest" : "/home/robert/code/CTF3/services/SomeService/Manifest.json" },
+        { "name" : "YellowPages", "manifest" : "/home/robert/code/CTF3/services/SomeService/Manifest.json" },
+        { "name" : "RockPaperScissorLizardSpock", "manifest" : "/home/robert/code/CTF3/services/SomeService/Manifest.json" },
+        { "name" : "FileServer", "manifest" : "/home/robert/code/CTF3/services/SomeService/Manifest.json" }
     ]
 }
