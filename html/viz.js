@@ -284,6 +284,12 @@ $(function() {
         this.endTime = null;
         this.replayBeginTime = null;
         this.timeTransform = 1;
+        this.endCallback = null;
+    };
+
+    Timeline.prototype.setEndCallback = function(callback) {
+        this.endCallback = callback;
+        return this;
     };
 
     Timeline.prototype.getTimeTransform = function() {
@@ -333,9 +339,16 @@ $(function() {
     };
 
     Timeline.prototype.tick = function(time, ctx) {
-        _.forEach(this.frames, function(f) {
-            f.tick(time, ctx);
-        });
+        if (time > this.getEndTime()) {
+            if (this.endCallback !== null) {
+                this.endCallback(this);
+            }
+            this.replayBeginTime = null;
+        } else {
+            _.forEach(this.frames, function(f) {
+                f.tick(time, ctx);
+            });
+        }
     };
 
     Timeline.prototype.start = function() {
