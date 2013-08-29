@@ -589,6 +589,67 @@ $(function() {
                 viz.setTimeline(timeline).start();
                 $(this).text('Start over');
             });
+
+            var demo = function(event) {
+                var tl = buildTimeLine([event], viz);
+                viz.setTimeline(tl).start();
+            };
+
+            $('#demo_delivery_success').click(function() {
+                var team = viz.teams[0];
+                demo({
+                    "type": "deliver",
+                    "time": 1320422938000,
+                    "team": team.name,
+                    "service": team.services[0].name,
+                    "success": true
+                });
+            });
+
+            $('#demo_delivery_failure').click(function() {
+                var team = viz.teams[0];
+                demo({
+                    "type": "deliver",
+                    "time": 1320422938000,
+                    "team": team.name,
+                    "service": team.services[0].name,
+                    "success": false
+                });
+            });
+
+            $('#demo_check_success').click(function() {
+                var team = viz.teams[0];
+                demo({
+                    "type": "check",
+                    "time": 1320423203000,
+                    "team": team.name,
+                    "service": team.services[0].name,
+                    "success": true
+                })
+            });
+
+            $('#demo_check_failure').click(function() {
+                var team = viz.teams[0];
+                demo({
+                    "type": "check",
+                    "time": 1320423203000,
+                    "team": team.name,
+                    "service": team.services[0].name,
+                    "success": false
+                })
+            });
+
+            $('#demo_capture').click(function() {
+                var victim = viz.teams[0],
+                    attacker = viz.teams[viz.teams.length - 1];
+                demo({
+                    "type": "capture",
+                    "time": 1320423213000,
+                    "team": attacker.name,
+                    "service": victim.services[0].name,
+                    "victim": victim.name
+                });
+            });
         }
     });
 });
