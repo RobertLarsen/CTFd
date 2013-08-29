@@ -288,6 +288,7 @@ $(function() {
 
     Timeline.prototype.setTimeTransform = function(transform) {
         this.timeTransform = transform;
+        return this;
     };
 
     Timeline.prototype.addTimeFrame = function(frame) {
@@ -330,12 +331,19 @@ $(function() {
 
     Timeline.prototype.start = function() {
         this.replayBeginTime = +new Date();
+        return this;
     };
 
     Timeline.prototype.draw = function(ctx) {
         if (this.replayBeginTime !== null) {
             var now = +new Date(),
-                time = (now - this.replayBeginTime) * this.timeTransform + this.beginTime();
+                time = (now - this.replayBeginTime) * this.timeTransform + this.beginTime(),
+                fontSize = 20;
+                timeString = new Date(time).toLocaleString();
+            ctx.fillStyle = 'black';
+            ctx.textAlign = 'right';
+            ctx.font = fontSize + 'pt Calibri';
+            ctx.fillText(timeString, ctx.canvas.width, fontSize);
             this.tick(time, ctx);
         }
     };
@@ -438,12 +446,12 @@ $(function() {
                         team = viz.getTeam(e.team),
                         service = team.getService(e.service);
                     //First shoot
-                    ts.addDuration(new Duration(1000)).setHandler(function(t, ctx) {
+                    ts.addDuration(new Duration(2000)).setHandler(function(t, ctx) {
                         ctx.strokeStyle = 'blue';
                         drawLine(viz.scoreServer, service, t, ctx);
                     });
                     //Then fade out
-                    ts.addDuration(new Duration(1000)).setHandler(function(t, ctx) {
+                    ts.addDuration(new Duration(2000)).setHandler(function(t, ctx) {
                         ctx.strokeStyle = e.success ? 'blue' : 'red';
                         drawLine(service, viz.scoreServer, 1 - t, ctx);
                     });
@@ -455,17 +463,17 @@ $(function() {
                         service = viz.getTeam(e.victim).getService(e.service),
                         team = viz.getTeam(e.team);
                     //First one second for the shot
-                    ts.addDuration(new Duration(1000)).setHandler(function(t, ctx) {
+                    ts.addDuration(new Duration(2000)).setHandler(function(t, ctx) {
                         ctx.strokeStyle = 'red';
                         drawLine(team, service, t, ctx);
                     });
                     //Wait two secons
-                    ts.addDuration(new Duration(2000)).setHandler(function(t, ctx) {
+                    ts.addDuration(new Duration(4000)).setHandler(function(t, ctx) {
                         ctx.strokeStyle = 'red';
                         drawLine(team, service, 1, ctx);
                     });
                     //Then one second for retrieval
-                    ts.addDuration(new Duration(1000)).setHandler(function(t, ctx) {
+                    ts.addDuration(new Duration(2000)).setHandler(function(t, ctx) {
                         ctx.strokeStyle = 'red';
                         drawLine(team, service, 1 - t, ctx);
                     });
@@ -476,17 +484,17 @@ $(function() {
                     var ts = new TimeSequence(e.time),
                         service = viz.getTeam(e.team).getService(e.service);
                     //First one second for the shot
-                    ts.addDuration(new Duration(1000)).setHandler(function(t, ctx) {
+                    ts.addDuration(new Duration(2000)).setHandler(function(t, ctx) {
                         ctx.strokeStyle = 'orange';
                         drawLine(viz.scoreServer, service, t, ctx);
                     });
                     //Wait
-                    ts.addDuration(new Duration(1000)).setHandler(function(t, ctx) {
+                    ts.addDuration(new Duration(2000)).setHandler(function(t, ctx) {
                         ctx.strokeStyle = 'orange';
                         drawLine(viz.scoreServer, service, 1, ctx);
                     });
                     //Then one second for retrieval
-                    ts.addDuration(new Duration(1000)).setHandler(function(t, ctx) {
+                    ts.addDuration(new Duration(2000)).setHandler(function(t, ctx) {
                         ctx.strokeStyle = e.success ? 'green' : 'red';
                         drawLine(viz.scoreServer, service, 1 - t, ctx);
                     });
@@ -513,11 +521,8 @@ $(function() {
                                .setRadius(30));
             });
             viz.alignTeams().start();
-            var pre = +new Date();
-            timeline = buildTimeLine(data.events, viz);
-            console.log('Timeline built in ' + ((+new Date()) - pre) + ' ms');
-            window.tl = timeline;
-            viz.addDrawable(tl);
+            timeline = buildTimeLine(data.events, viz).setTimeTransform(10).start();
+            viz.addDrawable(timeline);
         }
     });
 });
