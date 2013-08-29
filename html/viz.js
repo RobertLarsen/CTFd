@@ -286,6 +286,10 @@ $(function() {
         this.timeTransform = 1;
     };
 
+    Timeline.prototype.getTimeTransform = function() {
+        return this.timeTransform;
+    };
+
     Timeline.prototype.setTimeTransform = function(transform) {
         if (this.replayBeginTime !== null) {
             var now = +new Date(),
@@ -377,10 +381,20 @@ $(function() {
         this.canvas = canvas;
         this.radius = 200;
         this.teams = [];
+        this.timeline = null;
         this.scoreServer = new ScoreServerViz().setRadius(40).setPosition(canvas.width/2, canvas.height - 100);
 
         this.drawables = [];
         this.drawables.push(this.scoreServer);
+    };
+
+    Vizualizer.prototype.setTimeline = function(timeline) {
+        this.timeline = timeline;
+        return this.addDrawable(timeline);
+    };
+
+    Vizualizer.prototype.getTimeline = function() {
+        return this.timeline;
     };
 
     Vizualizer.prototype.setRadius = function(radius) {
@@ -417,8 +431,12 @@ $(function() {
     };
 
     Vizualizer.prototype.start = function() {
-        this.repaint();
-        requestAnimationFrame(_.bind(this.start, this));
+        var again = _.bind(function() {
+                this.repaint();
+                requestAnimationFrame(again);
+            }, this);
+        again();
+        this.timeline.start();
         return this;
     };
 
@@ -537,10 +555,29 @@ $(function() {
                 viz.addTeam(new TeamViz(team, data.services)
                                .setRadius(30));
             });
-            viz.alignTeams().start();
-            timeline = buildTimeLine(data.events, viz).setTimeTransform(10).start();
-            viz.addDrawable(timeline);
-            window.timeline = timeline;
+            viz.alignTeams().setTimeline(buildTimeLine(data.events, viz));
+            $(document).trigger('viz', viz);
+
+            $('#faster').click(function() {
+                var tl = viz.getTimeline(),
+                    speed = tl.getTimeTransform() + 1;
+                tl.setTimeTransform(speed);
+                $('#speed_indicator').text('Speed: ' + speed + 'x');
+            });
+
+            $('#slower').click(function() {
+                var tl = viz.getTimeline(),
+                    speed = tl.getTimeTransform() - 1;
+                if (speed > 0) {
+                    tl.setTimeTransform(speed);
+                    $('#speed_indicator').text('Speed: ' + speed + 'x');
+                }
+            });
+
+            $('#start').click(function() {
+                viz.start();
+                $(this).text('Start over');
+            });
         }
     });
 });
