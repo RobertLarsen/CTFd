@@ -3,16 +3,33 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title>Capture The Flag - Scoreboard</title>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.1/underscore-min.js"></script>
-        <script src="/Stats.js"></script>
-        <script src="/viz.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.1/underscore-min.js"></script>
+        <script src="Stats.js"></script>
+        <script src="viz.js"></script>
         <link type="text/css" rel="stylesheet" href="/viz.css"/>
     </head>
     <body>
         <h1>CTF Visualization</h1>
         <div id="speed_indicator">Speed: 1x</div>
-        <div><button id="faster">Faster</button><button id="slower">Slower</button><button id="start">Start</button></div>
+        <div class="buttons">
+            <fieldset>
+                <legend>Run</legend>
+                <button id="faster">Faster</button>
+                <button id="slower">Slower</button>
+                <button id="start">Start</button>
+            </fieldset>
+        </div>
+        <div id="demo_buttons" class="buttons">
+            <fieldset>
+                <legend>Demo</legend>
+                <button>Successful delivery</button>
+                <button>Failing delivery</button>
+                <button>Successful check</button>
+                <button>Failing check</button>
+                <button>Capture</button>
+            </fieldset>
+        </div>
         <canvas id="viz" width="1200" height="800"></canvas>
     </body>
 </html>

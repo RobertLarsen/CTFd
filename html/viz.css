@@ -1,3 +1,8 @@
 canvas {
     border : 1px solid black;
 }
+
+.buttons {
+    display: inline-block;
+    width: 600px;
+}

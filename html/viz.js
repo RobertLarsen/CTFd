@@ -389,6 +389,10 @@ $(function() {
     };
 
     Vizualizer.prototype.setTimeline = function(timeline) {
+        if (this.timeline !== null) {
+            this.removeDrawable(this.timeline);
+            this.timeline = null;
+        }
         this.timeline = timeline;
         return this.addDrawable(timeline);
     };
@@ -423,6 +427,13 @@ $(function() {
     Vizualizer.prototype.addTeam = function(team) {
         this.teams.push(team);
         return this.addDrawable(team);
+    };
+
+    Vizualizer.prototype.removeDrawable = function(drawable) {
+        var idx = this.drawables.indexOf(drawable);
+        if (idx >= 0) {
+            this.drawables.splice(idx, 1);
+        }
     };
 
     Vizualizer.prototype.addDrawable = function(drawable) {
@@ -546,7 +557,7 @@ $(function() {
         return tl.prepare();
     };
 
-    $.ajax('/viz.json', {
+    $.ajax('viz.json', {
         success : function(data) {
             var viz = new Vizualizer(document.getElementById('viz')).setRadius(450),
                 timeline;
@@ -555,27 +566,27 @@ $(function() {
                 viz.addTeam(new TeamViz(team, data.services)
                                .setRadius(30));
             });
-            viz.alignTeams().setTimeline(buildTimeLine(data.events, viz));
+            timeline = buildTimeLine(data.events, viz);
+            viz.alignTeams();
             $(document).trigger('viz', viz);
 
             $('#faster').click(function() {
-                var tl = viz.getTimeline(),
-                    speed = tl.getTimeTransform() + 1;
-                tl.setTimeTransform(speed);
+                var speed = timeline.getTimeTransform() + 1;
+                timeline.setTimeTransform(speed);
                 $('#speed_indicator').text('Speed: ' + speed + 'x');
             });
 
             $('#slower').click(function() {
-                var tl = viz.getTimeline(),
-                    speed = tl.getTimeTransform() - 1;
+                var speed = timeline.getTimeTransform() - 1;
                 if (speed > 0) {
-                    tl.setTimeTransform(speed);
+                    timeline.setTimeTransform(speed);
                     $('#speed_indicator').text('Speed: ' + speed + 'x');
                 }
             });
 
             $('#start').click(function() {
-                viz.start();
+                $('#demo_buttons button').attr('disabled', 'disabled');
+                viz.setTimeline(timeline).start();
                 $(this).text('Start over');
             });
         }
