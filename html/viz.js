@@ -1,29 +1,54 @@
 $(function() {
-    var ServiceViz = function(name) {
-        this.name = name;
+    var inherits = function(child, parent) {
+        var ctor = function() { };
+        ctor.prototype = parent.prototype;
+        child.superClass_ = parent.prototype;
+        child.prototype = new ctor();
+        child.prototype.constructor = child;
+    };
+
+    var Circle = function() {
         this.radius = 5;
         this.position = {
             x : 0,
             y : 0
         };
+        this.fillStyle = 'red';
+        this.strokeStyle = '#300';
+        this.lineWidth = 3;
     };
 
-    ServiceViz.prototype.setPosition = function(x, y) {
+    Circle.prototype.setFillStyle = function(style) {
+        this.fillStyle = style;
+        return this;
+    };
+
+    Circle.prototype.setStrokeStyle = function(style) {
+        this.strokeStyle = style;
+        return this;
+    };
+
+    Circle.prototype.setLineWidth = function(width) {
+        this.lineWidth = width;
+        return this;
+    };
+
+    Circle.prototype.setPosition = function(x, y) {
         this.position.x = x;
         this.position.y = y;
         return this;
     };
 
-    ServiceViz.prototype.setRadius = function(radius) {
+    Circle.prototype.setRadius = function(radius) {
         this.radius = radius;
         return this;
     };
 
-    ServiceViz.prototype.draw = function(ctx) {
+    Circle.prototype.draw = function(ctx) {
         //Draw circle
-        ctx.fillStyle = 'red';
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = '#300';
+        ctx.fillStyle = this.fillStyle;
+        ctx.lineWidth = this.lineWidth;
+        ctx.strokeStyle = this.strokeStyle;
 
         ctx.beginPath();
         ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, false);
@@ -31,20 +56,24 @@ $(function() {
         ctx.stroke();
     };
 
+    var ServiceViz = function(name) {
+        Circle.call(this);
+        this.setFillStyle('#0f0').setStrokeStyle('#030');
+        this.name = name;
+    };
+    inherits(ServiceViz, Circle);
+
     var TeamViz = function(name, services) {
+        Circle.call(this);
+        this.setFillStyle('#00f').setStrokeStyle('#003');
         this.name = name;
         this.services = _.map(services, function(s) {
             return new ServiceViz(s);
         });
-        this.radius = 0;
         this.fontSize = 20;
-        this.position = {
-            x : 0,
-            y : 0
-        };
-
         this.setRadius(30);
     };
+    inherits(TeamViz, Circle);
 
     TeamViz.prototype.setFontSize = function(size) {
         this.fontSize = size;
@@ -52,13 +81,12 @@ $(function() {
     };
 
     TeamViz.prototype.setPosition = function(x, y) {
-        this.position.x = x;
-        this.position.y = y;
+        Circle.prototype.setPosition.call(this, x, y);
         return this.alignServices_();
     };
 
     TeamViz.prototype.setRadius = function(radius) {
-        this.radius = radius;
+        Circle.prototype.setRadius.call(this, radius);
         return this.alignServices_();
     };
 
@@ -90,16 +118,7 @@ $(function() {
     };
 
     TeamViz.prototype.draw = function(ctx) {
-        //Draw circle
-        ctx.fillStyle = 'green';
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = '#030';
-
-        ctx.beginPath();
-        ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, false);
-        ctx.fill();
-        ctx.stroke();
-
+        Circle.prototype.draw.call(this, ctx);
         //Draw name
         ctx.fillStyle = 'black';
         ctx.textAlign = 'center';
@@ -115,37 +134,14 @@ $(function() {
     };
 
     var ScoreServerViz = function() {
-        this.radius = 10;
-        this.position = {
-            x : 0,
-            y : 0
-        };
+        Circle.call(this);
+        this.setFillStyle('#0ff').setStrokeStyle('#033');
     };
-
-    ScoreServerViz.prototype.setPosition = function(x, y) {
-        this.position.x = x;
-        this.position.y = y;
-        return this;
-    };
-
-    ScoreServerViz.prototype.setRadius = function(radius) {
-        this.radius = radius;
-        return this;
-    };
-
+    inherits(ScoreServerViz, Circle);
 
     ScoreServerViz.prototype.draw = function(ctx) {
+        Circle.prototype.draw.call(this, ctx);
         var fontSize = 20;
-
-        ctx.fillStyle = 'blue';
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = '#003';
-
-        ctx.beginPath();
-        ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, false);
-        ctx.fill();
-        ctx.stroke();
-
         ctx.fillStyle = 'black';
         ctx.textAlign = 'center';
         ctx.font = fontSize + 'pt Calibri';
