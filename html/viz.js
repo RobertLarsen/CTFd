@@ -289,7 +289,7 @@ $(function() {
     Timeline.prototype.setTimeTransform = function(transform) {
         if (this.replayBeginTime !== null) {
             var now = +new Date(),
-                time = (now - this.replayBeginTime) * this.timeTransform + this.beginTime();
+                time = (now - this.replayBeginTime) * this.timeTransform + this.getBeginTime();
             this.replayBeginTime = ((now * transform) - (now - this.replayBeginTime) * this.timeTransform) / transform;
         }
         this.timeTransform = transform;
@@ -309,11 +309,11 @@ $(function() {
         return this;
     };
 
-    Timeline.prototype.beginTime = function() {
+    Timeline.prototype.getBeginTime = function() {
         return this.frames[0].getBeginTime();
     };
 
-    Timeline.prototype.endTime = function() {
+    Timeline.prototype.getEndTime = function() {
         if (this.endTime === null) {
             var end = 0;
             _.forEach(this.frames, function(f) {
@@ -324,8 +324,8 @@ $(function() {
         return this.endTime;
     };
 
-    Timeline.prototype.duration = function() {
-        return this.endTime() - this.beginTime();
+    Timeline.prototype.getDuration = function() {
+        return this.getEndTime() - this.getBeginTime();
     };
 
     Timeline.prototype.tick = function(time, ctx) {
@@ -342,13 +342,25 @@ $(function() {
     Timeline.prototype.draw = function(ctx) {
         if (this.replayBeginTime !== null) {
             var now = +new Date(),
-                time = (now - this.replayBeginTime) * this.timeTransform + this.beginTime(),
-                fontSize = 20;
+                time = (now - this.replayBeginTime) * this.timeTransform + this.getBeginTime(),
+                relativeTime = (time - this.getBeginTime()) / this.getDuration(),
+                fontSize = 20,
                 timeString = new Date(time).toLocaleString();
+
+            //Draw time
             ctx.fillStyle = 'black';
             ctx.textAlign = 'right';
             ctx.font = fontSize + 'pt Calibri';
             ctx.fillText(timeString, ctx.canvas.width, fontSize);
+
+            //Draw box representing relative time
+            ctx.fillStyle = '#ff0';
+            ctx.strokeStyle = '#330';
+            ctx.fillRect(0, ctx.canvas.height - 30, ctx.canvas.width * relativeTime, 30);
+            ctx.strokeRect(0, ctx.canvas.height - 30, ctx.canvas.width - 1, 30);
+            ctx.fillStyle = 'black';
+            ctx.textAlign = 'center';
+            ctx.fillText(Math.min(100, Math.round(relativeTime * 100)) + '%', ctx.canvas.width / 2, ctx.canvas.height - fontSize / 3);
             this.tick(time, ctx);
         }
     };
