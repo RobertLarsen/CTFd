@@ -287,6 +287,11 @@ $(function() {
     };
 
     Timeline.prototype.setTimeTransform = function(transform) {
+        if (this.replayBeginTime !== null) {
+            var now = +new Date(),
+                time = (now - this.replayBeginTime) * this.timeTransform + this.beginTime();
+            this.replayBeginTime = ((now * transform) - (now - this.replayBeginTime) * this.timeTransform) / transform;
+        }
         this.timeTransform = transform;
         return this;
     };
@@ -523,6 +528,7 @@ $(function() {
             viz.alignTeams().start();
             timeline = buildTimeLine(data.events, viz).setTimeTransform(10).start();
             viz.addDrawable(timeline);
+            window.timeline = timeline;
         }
     });
 });
