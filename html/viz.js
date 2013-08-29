@@ -56,16 +56,6 @@ $(function() {
         child.prototype.constructor = child;
     };
 
-    var DrawLineBetween = function(circle1, circle2, t, ctx) {
-        var vector = new Vector(circle2.position.x - circle1.position.x, circle2.position.y - circle1.position.y),
-            origin = new Vector(vector).scaleToLength(circle1.radius).add(circle1.position),
-            destination = new Vector(vector).scaleToLength(vector.length() - circle1.radius - circle2.radius).scale(t).add(origin);
-        ctx.beginPath();
-        ctx.moveTo(origin.x, origin.y);
-        ctx.lineTo(destination.x, destination.y);
-        ctx.stroke();
-    };
-
     var Circle = function() {
         this.radius = 5;
         this.position = new Vector(0, 0);
@@ -130,6 +120,10 @@ $(function() {
         this.setRadius(30);
     };
     inherits(TeamViz, Circle);
+
+    TeamViz.prototype.getService = function(name) {
+        return _.findWhere(this.services, {name:name});
+    };
 
     TeamViz.prototype.setFontSize = function(size) {
         this.fontSize = size;
@@ -204,6 +198,148 @@ $(function() {
         ctx.fillText('Score Server', this.position.x, this.position.y + this.radius + fontSize);
     };
 
+    var TimeFrame = function() {};
+    TimeFrame.prototype.tick = function(time, ctx) {throw 'Not implemented';};
+    TimeFrame.prototype.setBeginTime = function(beginTime) {throw 'Not implemented';};
+    TimeFrame.prototype.getBeginTime = function() {throw 'Not implemented';};
+    TimeFrame.prototype.getDuration  = function() {throw 'Not implemented';};
+
+    var Duration = function(duration) {
+        TimeFrame.call(this);
+        this.beginTime = null;
+        this.handler = null;
+        this.duration = duration;
+    };
+    inherits(Duration, TimeFrame);
+
+    Duration.prototype.setHandler = function(handler) {
+        this.handler = handler;
+    };
+
+    Duration.prototype.tick = function(time, ctx) {
+        if (this.handler !== null) {
+            var t = (time - this.beginTime) / this.duration;
+            if (t >= 0 && t <= 1) {
+                this.handler(t, ctx);
+            }
+        }
+    };
+
+    Duration.prototype.setBeginTime = function(begin) {
+        this.beginTime = begin;
+    };
+
+    Duration.prototype.getBeginTime = function() {
+        return this.beginTime;
+    };
+
+    Duration.prototype.getDuration  = function() {
+        return this.duration;
+    };
+
+    var TimeSequence = function(beginTime) {
+        TimeFrame.call(this);
+        this.beginTime = beginTime;
+        this.frames = [];
+    };
+    inherits(TimeSequence, TimeFrame);
+
+    TimeSequence.prototype.tick = function(time, ctx) {
+        if (time >= this.beginTime && time <= this.beginTime + this.getDuration()) {
+            _.forEach(this.frames, function(f) {
+                f.tick(time, ctx);
+            });
+        }
+    };
+
+    TimeSequence.prototype.setBeginTime = function(begin) {
+        this.beginTime = begin;
+    };
+
+    TimeSequence.prototype.addDuration = function(duration) {
+        var last;
+        if (this.frames.length === 0) {
+            duration.setBeginTime(this.beginTime);
+        } else {
+            last = this.frames[this.frames.length - 1];
+            duration.setBeginTime(last.getBeginTime() + last.getDuration());
+        }
+        this.frames.push(duration);
+
+        return duration;
+    };
+
+    TimeSequence.prototype.getBeginTime = function() {
+        return this.beginTime;
+    };
+
+    TimeSequence.prototype.getDuration = function() {
+        var last = this.frames[this.frames.length - 1];
+
+        return last.getBeginTime() + last.getDuration() - this.beginTime;
+    };
+
+    var Timeline = function() {
+        this.frames = [];
+        this.endTime = null;
+        this.replayBeginTime = null;
+        this.timeTransform = 1;
+    };
+
+    Timeline.prototype.setTimeTransform = function(transform) {
+        this.timeTransform = transform;
+    };
+
+    Timeline.prototype.addTimeFrame = function(frame) {
+        this.endTime = null;
+        this.frames.push(frame);
+        return this;
+    };
+
+    Timeline.prototype.prepare = function() {
+        this.frames.sort(function(a, b) {
+            return a.getBeginTime() - b.getBeginTime();
+        });
+        return this;
+    };
+
+    Timeline.prototype.beginTime = function() {
+        return this.frames[0].getBeginTime();
+    };
+
+    Timeline.prototype.endTime = function() {
+        if (this.endTime === null) {
+            var end = 0;
+            _.forEach(this.frames, function(f) {
+                end = Math.max(end, f.getBeginTime() + f.getDuration());
+            });
+            this.endTime = end;
+        }
+        return this.endTime;
+    };
+
+    Timeline.prototype.duration = function() {
+        return this.endTime() - this.beginTime();
+    };
+
+    Timeline.prototype.tick = function(time, ctx) {
+        _.forEach(this.frames, function(f) {
+            f.tick(time, ctx);
+        });
+    };
+
+    Timeline.prototype.start = function() {
+        this.replayBeginTime = +new Date();
+    };
+
+    Timeline.prototype.draw = function(ctx) {
+        if (this.replayBeginTime !== null) {
+            var now = +new Date(),
+                time = (now - this.replayBeginTime) * this.timeTransform + this.beginTime();
+            this.tick(time, ctx);
+        }
+    };
+
     var Vizualizer = function(canvas) {
         var s = new Stats();
         s.setMode(0);
@@ -247,12 +383,22 @@ $(function() {
 
     Vizualizer.prototype.addTeam = function(team) {
         this.teams.push(team);
-        this.drawables.push(team);
+        return this.addDrawable(team);
+    };
+
+    Vizualizer.prototype.addDrawable = function(drawable) {
+        this.drawables.push(drawable);
+        return this;
     };
 
     Vizualizer.prototype.start = function() {
         this.repaint();
         requestAnimationFrame(_.bind(this.start, this));
+        return this;
+    };
+
+    Vizualizer.prototype.getTeam = function(name) {
+        return _.findWhere(this.teams, {name:name});
     };
 
     Vizualizer.prototype.repaint = function() {
@@ -270,40 +416,108 @@ $(function() {
             ctx.restore();
         });
 
-        ctx.strokeStyle = 'red';
-        ctx.lineWidth = 2;
-        DrawLineBetween(this.scoreServer, this.teams[0].services[0], 1, ctx);
-
         this.stats.end();
     };
 
-    var viz = new Vizualizer(document.getElementById('viz')),
-        teams = [
-            "Ring0",
-            "Darkside Inc",
-            "Tykhax",
-            "def4ult",
-            "Pwnies",
-            "Hack n Slash",
-            "EuroNOP",
-            "Dont Mind Us",
-            "Secure Noodle Squad",
-            "Majskinke"
-        ],
-        services = [
-            "HighLow",
-            "Phasebook",
-            "SecretService",
-            "YellowPages",
-            "RockPaperScissorLizardSpock",
-            "FileServer"
-        ];
+    var drawLine = function(circle1, circle2, scale, ctx) {
+        var vector = new Vector(circle2.position.x - circle1.position.x, circle2.position.y - circle1.position.y),
+            origin = new Vector(vector).scaleToLength(circle1.radius).add(circle1.position),
+            destination = new Vector(vector).scaleToLength(vector.length() - circle1.radius - circle2.radius).scale(scale).add(origin);
 
+        ctx.beginPath();
+        ctx.moveTo(origin.x, origin.y);
+        ctx.lineTo(destination.x, destination.y);
+        ctx.stroke();
+    };
 
-    _.forEach(teams, function(team) {
-        viz.addTeam(new TeamViz(team, services)
-                       .setRadius(30));
+    var buildTimeLine = function(events, viz) {
+        var tl = new Timeline(events[0].time),
+            handlers = {
+                'deliver' : function(e) {
+                    var ts = new TimeSequence(e.time),
+                        team = viz.getTeam(e.team),
+                        service = team.getService(e.service);
+                    //First shoot
+                    ts.addDuration(new Duration(1000)).setHandler(function(t, ctx) {
+                        ctx.strokeStyle = 'blue';
+                        drawLine(viz.scoreServer, service, t, ctx);
+                    });
+                    //Then fade out
+                    ts.addDuration(new Duration(1000)).setHandler(function(t, ctx) {
+                        ctx.strokeStyle = e.success ? 'blue' : 'red';
+                        drawLine(service, viz.scoreServer, 1 - t, ctx);
+                    });
+
+                    return ts;
+                },
+                'capture' : function(e) {
+                    var ts = new TimeSequence(e.time),
+                        service = viz.getTeam(e.victim).getService(e.service),
+                        team = viz.getTeam(e.team);
+                    //First one second for the shot
+                    ts.addDuration(new Duration(1000)).setHandler(function(t, ctx) {
+                        ctx.strokeStyle = 'red';
+                        drawLine(team, service, t, ctx);
+                    });
+                    //Wait two secons
+                    ts.addDuration(new Duration(2000)).setHandler(function(t, ctx) {
+                        ctx.strokeStyle = 'red';
+                        drawLine(team, service, 1, ctx);
+                    });
+                    //Then one second for retrieval
+                    ts.addDuration(new Duration(1000)).setHandler(function(t, ctx) {
+                        ctx.strokeStyle = 'red';
+                        drawLine(team, service, 1 - t, ctx);
+                    });
+
+                    return ts;
+                },
+                'check' : function(e) {
+                    var ts = new TimeSequence(e.time),
+                        service = viz.getTeam(e.team).getService(e.service);
+                    //First one second for the shot
+                    ts.addDuration(new Duration(1000)).setHandler(function(t, ctx) {
+                        ctx.strokeStyle = 'orange';
+                        drawLine(viz.scoreServer, service, t, ctx);
+                    });
+                    //Wait
+                    ts.addDuration(new Duration(1000)).setHandler(function(t, ctx) {
+                        ctx.strokeStyle = 'orange';
+                        drawLine(viz.scoreServer, service, 1, ctx);
+                    });
+                    //Then one second for retrieval
+                    ts.addDuration(new Duration(1000)).setHandler(function(t, ctx) {
+                        ctx.strokeStyle = e.success ? 'green' : 'red';
+                        drawLine(viz.scoreServer, service, 1 - t, ctx);
+                    });
+
+                    return ts;
+                }
+            };
+        _.forEach(events, function(e) {
+            var tf = handlers[e.type](e);
+            if (tf) {
+                tl.addTimeFrame(tf);
+            }
+        });
+        return tl.prepare();
+    };
+
+    $.ajax('/viz.json', {
+        success : function(data) {
+            var viz = new Vizualizer(document.getElementById('viz')).setRadius(450),
+                timeline;
+
+            _.forEach(data.teams, function(team) {
+                viz.addTeam(new TeamViz(team, data.services)
+                               .setRadius(30));
+            });
+            viz.alignTeams().start();
+            var pre = +new Date();
+            timeline = buildTimeLine(data.events, viz);
+            console.log('Timeline built in ' + ((+new Date()) - pre) + ' ms');
+            window.tl = timeline;
+            viz.addDrawable(tl);
+        }
     });
-
-    viz.setRadius(450).alignTeams().start();
 });
