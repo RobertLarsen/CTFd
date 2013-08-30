@@ -573,99 +573,97 @@ $(function() {
         return tl.prepare();
     };
 
-    $.ajax('viz.json', {
-        success : function(data) {
-            var viz = new Vizualizer(document.getElementById('viz')).setRadius(450),
-                timeline;
-
-            _.forEach(data.teams, function(team) {
-                viz.addTeam(new TeamViz(team, data.services)
-                               .setRadius(30));
-            });
-            timeline = buildTimeLine(data.events, viz);
-            viz.alignTeams();
-            $(document).trigger('viz', viz);
-
-            $('#faster').click(function() {
-                var speed = timeline.getTimeTransform() + 1;
+    $(document).bind('data', function(e, data) {
+        var viz = new Vizualizer(document.getElementById('viz')).setRadius(450),
+            timeline;
+        
+        _.forEach(data.teams, function(team) {
+            viz.addTeam(new TeamViz(team, data.services)
+                           .setRadius(30));
+        });
+        timeline = buildTimeLine(data.events, viz);
+        viz.alignTeams();
+        $(document).trigger('viz', viz);
+        
+        $('#faster').click(function() {
+            var speed = timeline.getTimeTransform() + 1;
+            timeline.setTimeTransform(speed);
+            $('#speed_indicator').text('Speed: ' + speed + 'x');
+        });
+        
+        $('#slower').click(function() {
+            var speed = timeline.getTimeTransform() - 1;
+            if (speed > 0) {
                 timeline.setTimeTransform(speed);
                 $('#speed_indicator').text('Speed: ' + speed + 'x');
+            }
+        });
+        
+        $('#start').click(function() {
+            $('#demo_buttons button').attr('disabled', 'disabled');
+            viz.setTimeline(timeline).start();
+            $(this).text('Start over');
+        });
+        
+        var demo = function(event) {
+            var tl = buildTimeLine([event], viz);
+            viz.setTimeline(tl).start();
+        };
+        
+        $('#demo_delivery_success').click(function() {
+            var team = viz.teams[0];
+            demo({
+                "type": "deliver",
+                "time": 1320422938000,
+                "team": team.name,
+                "service": team.services[0].name,
+                "success": true
             });
-
-            $('#slower').click(function() {
-                var speed = timeline.getTimeTransform() - 1;
-                if (speed > 0) {
-                    timeline.setTimeTransform(speed);
-                    $('#speed_indicator').text('Speed: ' + speed + 'x');
-                }
+        });
+        
+        $('#demo_delivery_failure').click(function() {
+            var team = viz.teams[0];
+            demo({
+                "type": "deliver",
+                "time": 1320422938000,
+                "team": team.name,
+                "service": team.services[0].name,
+                "success": false
             });
-
-            $('#start').click(function() {
-                $('#demo_buttons button').attr('disabled', 'disabled');
-                viz.setTimeline(timeline).start();
-                $(this).text('Start over');
+        });
+        
+        $('#demo_check_success').click(function() {
+            var team = viz.teams[0];
+            demo({
+                "type": "check",
+                "time": 1320423203000,
+                "team": team.name,
+                "service": team.services[0].name,
+                "success": true
+            })
+        });
+        
+        $('#demo_check_failure').click(function() {
+            var team = viz.teams[0];
+            demo({
+                "type": "check",
+                "time": 1320423203000,
+                "team": team.name,
+                "service": team.services[0].name,
+                "success": false
+            })
+        });
+        
+        $('#demo_capture').click(function() {
+            var victim = viz.teams[0],
+                attacker = viz.teams[viz.teams.length - 1];
+            demo({
+                "type": "capture",
+                "time": 1320423213000,
+                "team": attacker.name,
+                "service": victim.services[0].name,
+                "victim": victim.name
             });
-
-            var demo = function(event) {
-                var tl = buildTimeLine([event], viz);
-                viz.setTimeline(tl).start();
-            };
-
-            $('#demo_delivery_success').click(function() {
-                var team = viz.teams[0];
-                demo({
-                    "type": "deliver",
-                    "time": 1320422938000,
-                    "team": team.name,
-                    "service": team.services[0].name,
-                    "success": true
-                });
-            });
-
-            $('#demo_delivery_failure').click(function() {
-                var team = viz.teams[0];
-                demo({
-                    "type": "deliver",
-                    "time": 1320422938000,
-                    "team": team.name,
-                    "service": team.services[0].name,
-                    "success": false
-                });
-            });
-
-            $('#demo_check_success').click(function() {
-                var team = viz.teams[0];
-                demo({
-                    "type": "check",
-                    "time": 1320423203000,
-                    "team": team.name,
-                    "service": team.services[0].name,
-                    "success": true
-                })
-            });
-
-            $('#demo_check_failure').click(function() {
-                var team = viz.teams[0];
-                demo({
-                    "type": "check",
-                    "time": 1320423203000,
-                    "team": team.name,
-                    "service": team.services[0].name,
-                    "success": false
-                })
-            });
-
-            $('#demo_capture').click(function() {
-                var victim = viz.teams[0],
-                    attacker = viz.teams[viz.teams.length - 1];
-                demo({
-                    "type": "capture",
-                    "time": 1320423213000,
-                    "team": attacker.name,
-                    "service": victim.services[0].name,
-                    "victim": victim.name
-                });
-            });
-        }
+        });
     });
 });

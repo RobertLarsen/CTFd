@@ -7,6 +7,15 @@
         <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.1/underscore-min.js"></script>
         <script src="Stats.js"></script>
         <script src="viz.js"></script>
+        <script>
+            $(function() {
+                $.ajax('viz.json', {
+                    success : function(data) {
+                        $(document).trigger('data', data);
+                    }
+                });
+            });
+        </script>
         <link type="text/css" rel="stylesheet" href="/viz.css"/>
     </head>
     <body>
