@@ -390,6 +390,7 @@ $(function() {
         s.domElement.style.top='0px';
         document.body.appendChild(s.domElement);
 
+        this.again = null;
         this.stats = s;
         this.canvas = canvas;
         this.radius = 200;
@@ -455,11 +456,13 @@ $(function() {
     };
 
     Vizualizer.prototype.start = function() {
-        var again = _.bind(function() {
+        if (this.again === null) {
+            var again = this.again = _.bind(function() {
                 this.repaint();
                 requestAnimationFrame(again);
             }, this);
-        again();
+            again();
+        }
         this.timeline.start();
         return this;
     };
