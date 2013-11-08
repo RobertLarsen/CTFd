@@ -32,7 +32,6 @@ function connect(){
 
 delivered_flags=0
 while read flag; do
-    echo $flag
     if echo "$flag"|grep -E '^[0-9A-Fa-f]{64}$' >/dev/null 2>&1; then
         if ! ( test -f $flag_db && grep -i $flag $flag_db >/dev/null 2>&1 ); then
             echo $flag >> $flag_db
