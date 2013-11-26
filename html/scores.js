@@ -30,6 +30,6 @@ $(function() {
         });
     };
 
-    //setInterval(Update, 1000);
+    setInterval(Update, 30000);
     Update();
 });
