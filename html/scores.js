@@ -1,4 +1,10 @@
 $(function() {
+    var limitString = function(str, len) {
+        if (str.length > len) {
+            str = str.substring(0, len - 3) + '...';
+        }
+        return str;
+    };
     var ShowData = function(data) {
             var tableData = '',
             T = function(text) {
@@ -8,6 +14,15 @@ $(function() {
                 _.chain(data.graphs)
                  .keys()
                  .forEach(function(name) {
+                     _.each(data.graphs[name].data, function(e) {
+                         e.label = limitString(e.label, 16);
+                     });
+
+                     if (data.graphs[name].options.xaxis) {
+                        _.each(data.graphs[name].options.xaxis.ticks, function(t) {
+                            t[1] = limitString(t[1], 16);      
+                        });
+                     }
                      $.plot('.' + name,
                             data.graphs[name].data,
                             data.graphs[name].options
