@@ -1,0 +1,50 @@
+#!/bin/bash
+
+HOST=$1
+PORT=$2
+TEAM=$3
+
+connected=0
+flag_db=$HOME/.delivered_flags 
+if [ "$TEAM" = "" ]; then
+    echo "Usage: $0 <gamehost> <port> <teamname>"
+    exit
+fi
+
+function connect(){
+    if test $connected -eq 0; then
+        if ! exec 3<>/dev/tcp/$HOST/$PORT; then
+            echo "Wrong host or port"
+            exit 1
+        fi
+        
+        echo "TEAM $TEAM" >&3
+        read -u 3 line
+        line=$(echo "$line"|tr -d '\r')
+        if [ "$line" != "0: Team name received" ]; then
+            echo "Bad team name"
+            exec 3>&-
+            exit 1
+        fi
+        connected=1
+    fi
+}
+
+delivered_flags=0
+while read flag; do
+    if echo "$flag"|grep -E '^[0-9A-Fa-f]{64}$' >/dev/null 2>&1; then
+        if ! ( test -f $flag_db && grep -i $flag $flag_db >/dev/null 2>&1 ); then
+            echo $flag >> $flag_db
+            connect
+            echo "FLAG $flag" >&3
+            read -u 3 line
+            line=$(echo "$line"|tr -d '\r')
+            if [ "$line" = "0: Flag captured" ]; then
+                delivered_flags=$((delivered_flags+1))
+            fi
+        fi
+    fi
+done
+
+exec 3>&-
+echo "Flags delivered: $delivered_flags"
