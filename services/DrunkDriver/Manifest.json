@@ -1,0 +1,6 @@
+{
+    "commands" : {
+        "plant_flag"  : "%SERVICE_DIRECTORY%/client %HOST% --plant %FLAGID% %FLAG%",
+        "check_flag"  : "%SERVICE_DIRECTORY%/client %HOST% --check %FLAGID% %FLAG%"
+    }
+}

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="Mongoloid" default="mongoloid">
+    <property name="dir.openfire" value="/home/robert/code/xmpp/openfire"/>
+    <property name="dir.libraries" value="lib"/>
+    <property name="dir.dist" value="dist"/>
+    <property name="dir.build" value="build"/>
+    <property name="dir.source" value="src"/>
+    <property name="filename.mongoloid" value="jabba-database.jar"/>
+    <property name="file.mongoloid" value="${dir.dist}/${filename.mongoloid}"/>
+    <property name="file.mongodb-driver" value="${dir.libraries}/mongo-java-driver-2.11.2.jar"/>
+    <property name="compile.debuglevel" value="lines,vars,source"/>
+    <property name="compile.debugging" value="on"/>
+
+    <path id="compile.classpath">
+        <fileset dir="${dir.libraries}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <path id="run.classpath">
+        <fileset dir=".">
+            <include name="${dir.libraries}/**/*.jar"/>
+            <include name="${dir.dist}/**/*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="init">
+        <mkdir dir="${dir.build}"/>
+        <mkdir dir="${dir.dist}"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="${dir.build}"/>
+        <delete dir="${dir.dist}"/>
+    </target>
+
+    <target name="run" depends="restart"/>
+
+    <target name="restart" depends="install">
+        <exec executable="${dir.openfire}/bin/openfire">
+            <arg value="stop"/>
+        </exec>
+        <exec executable="${dir.openfire}/bin/openfire">
+            <arg value="start"/>
+        </exec>
+    </target>
+
+    <target name="install" depends="mongoloid">
+        <copy file="${file.mongoloid}" todir="${dir.openfire}/lib"/>
+        <copy file="${file.mongodb-driver}" todir="${dir.openfire}/lib"/>
+    </target>
+
+    <target name="mongoloid" depends="compile">
+        <jar destfile="${file.mongoloid}">
+            <fileset dir="${dir.build}" includes="**/*.class"/>
+            <manifest>
+                <attribute name="Main-Class" value="MongoloidDatabase"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="compile" depends="init">
+        <javac includeantruntime="false" debuglevel="${compile.debuglevel}" debug="${compile.debugging}" destdir="${dir.build}">
+            <classpath refid="compile.classpath"/>
+            <compilerarg value="-Xlint"/>
+            <src path="${dir.source}"/>
+            <include name="**/*.java"/>
+        </javac>
+    </target>
+</project>

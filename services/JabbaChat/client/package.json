@@ -1,0 +1,22 @@
+{
+  "name": "JabbaClient",
+  "version": "0.0.1",
+  "description": "Client for checking JabbaChat.",
+  "main": "index",
+  "scripts": {
+    "run":  "node check.js http://localhost:7070/http-bind/ admin@komogvind.dk admin",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "jabba",
+    "xmpp",
+    "component"
+  ],
+  "author": "Robert Larsen",
+  "license": "Commercial",
+  "dependencies" : {
+      "node-stringprep" : "",
+      "node-bosh-xmpp-client" : "",
+      "underscore" : ""
+  }
+}

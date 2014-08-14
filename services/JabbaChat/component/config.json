@@ -1,0 +1,8 @@
+{
+    "jid" : "user.ctf.dk",
+    "server" : "localhost",
+    "port" : 5275,
+    "password" : "secret",
+    "ping_interval" : 15000,
+    "database" : "openfire"
+}

@@ -1,0 +1,6 @@
+{
+    "commands" : {
+        "plant_flag"  : "python %SERVICE_DIRECTORY%/mathclient.py --plant %HOST% 8787 %FLAGID% %FLAG%",
+        "check_flag"  : "python %SERVICE_DIRECTORY%/mathclient.py --check %HOST% 8787 %FLAGID% %FLAG%"
+    }
+}

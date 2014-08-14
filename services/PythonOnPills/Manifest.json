@@ -1,0 +1,6 @@
+{
+    "commands" : {
+        "plant_flag"  : "%SERVICE_DIRECTORY%/check_pills.sh --plant %HOST% 2222 %FLAG%",
+        "check_flag"  : "%SERVICE_DIRECTORY%/check_pills.sh --check %HOST% 2222 %FLAG%"
+    }
+}

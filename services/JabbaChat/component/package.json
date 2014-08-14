@@ -1,0 +1,23 @@
+{
+  "name": "JabbaServices",
+  "version": "0.0.1",
+  "description": "Services used by JabbaChat.",
+  "main": "index",
+  "scripts": {
+    "run":  "node server.js config.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "jabba",
+    "xmpp",
+    "component"
+  ],
+  "author": "Robert Larsen",
+  "license": "Commercial",
+  "dependencies" : {
+      "node-stringprep" : "",
+      "node-xmpp" : "",
+      "underscore" : "",
+      "mongojs" : ""
+  }
+}

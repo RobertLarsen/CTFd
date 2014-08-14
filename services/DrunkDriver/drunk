@@ -1,0 +1,28 @@
+#!/bin/bash
+
+DB=/usr/share/drunk/drunk.db
+DATA_DIR=$(dirname ${DB})
+SUCCESS=1
+
+test -d ${DATA_DIR} || mkdir -p ${DATA_DIR}
+test -f ${DB} || ( /bin/bash -c "echo 'create table t(key varchar(256) unique, value varchar(256));'" | sqlite3 ${DB} )
+
+if test "${1}" == "set"; then
+    if /bin/bash -c "echo \"replace into t values('${2}', '${3}');\"" | sqlite3 ${DB}; then
+        SUCCESS=0
+    fi
+elif test "${1}" == "check"; then 
+    if test $( /bin/bash -c "echo \"select count(*) from t where key='${2}' and value='${3}';\"" | sqlite3 ${DB} ) != "0"; then
+        SUCCESS=0
+    fi
+fi
+
+if test "${4}" != ""; then
+    port=8888
+    if test "${5}" != ""; then
+        port=${5}
+    fi
+    test ${SUCCESS} == 0 && ( echo -n Yay | nc -q 1 -u ${4} ${port} ) || ( echo -n Nay | nc -q 1 -u ${4} ${port} )
+fi
+
+exit ${SUCCESS}

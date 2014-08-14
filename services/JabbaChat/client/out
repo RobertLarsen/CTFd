@@ -1,0 +1,209 @@
+{ name: 'presence',
+  parent: 
+   { name: 'body',
+     parent: null,
+     attrs: { xmlns: 'http://jabber.org/protocol/httpbind' },
+     children: [ [Circular] ] },
+  attrs: 
+   { xmlns: 'jabber:client',
+     from: 'robert@komogvind.dk/2594519651029',
+     to: 'robert@komogvind.dk/5947351006325' },
+  children: [] }
+{ name: 'presence',
+  parent: 
+   { name: 'body',
+     parent: null,
+     attrs: { xmlns: 'http://jabber.org/protocol/httpbind' },
+     children: 
+      [ [Circular],
+        [Object],
+        [Object],
+        [Object],
+        [Object],
+        [Object],
+        [Object] ] },
+  attrs: 
+   { xmlns: 'jabber:client',
+     from: 'robert@komogvind.dk/8710548470262',
+     to: 'robert@komogvind.dk/5947351006325' },
+  children: [] }
+{ name: 'presence',
+  parent: 
+   { name: 'body',
+     parent: null,
+     attrs: { xmlns: 'http://jabber.org/protocol/httpbind' },
+     children: 
+      [ [Object],
+        [Circular],
+        [Object],
+        [Object],
+        [Object],
+        [Object],
+        [Object] ] },
+  attrs: 
+   { xmlns: 'jabber:client',
+     to: 'robert@komogvind.dk/5947351006325',
+     from: 'jabba@conference.komogvind.dk/robert' },
+  children: 
+   [ { name: 'x',
+       parent: [Circular],
+       attrs: [Object],
+       children: [Object] } ] }
+Looking up robert
+{ name: 'message',
+  parent: 
+   { name: 'body',
+     parent: null,
+     attrs: { xmlns: 'http://jabber.org/protocol/httpbind' },
+     children: 
+      [ [Object],
+        [Object],
+        [Circular],
+        [Object],
+        [Object],
+        [Object],
+        [Object] ] },
+  attrs: 
+   { xmlns: 'jabber:client',
+     type: 'groupchat',
+     from: 'jabba@conference.komogvind.dk',
+     to: 'robert@komogvind.dk/5947351006325' },
+  children: 
+   [ { name: 'subject',
+       parent: [Circular],
+       attrs: {},
+       children: [Object] },
+     { name: 'delay',
+       parent: [Circular],
+       attrs: [Object],
+       children: [] },
+     { name: 'x', parent: [Circular], attrs: [Object], children: [] } ] }
+{ name: 'message',
+  parent: 
+   { name: 'body',
+     parent: null,
+     attrs: { xmlns: 'http://jabber.org/protocol/httpbind' },
+     children: 
+      [ [Object],
+        [Object],
+        [Object],
+        [Circular],
+        [Object],
+        [Object],
+        [Object] ] },
+  attrs: 
+   { xmlns: 'jabber:client',
+     to: 'robert@komogvind.dk/5947351006325',
+     type: 'groupchat',
+     from: 'jabba@conference.komogvind.dk/admin' },
+  children: 
+   [ { name: 'body',
+       parent: [Circular],
+       attrs: [Object],
+       children: [Object] },
+     { name: 'delay',
+       parent: [Circular],
+       attrs: [Object],
+       children: [] },
+     { name: 'x', parent: [Circular], attrs: [Object], children: [] } ] }
+{ name: 'message',
+  parent: 
+   { name: 'body',
+     parent: null,
+     attrs: { xmlns: 'http://jabber.org/protocol/httpbind' },
+     children: 
+      [ [Object],
+        [Object],
+        [Object],
+        [Object],
+        [Circular],
+        [Object],
+        [Object] ] },
+  attrs: 
+   { xmlns: 'jabber:client',
+     to: 'robert@komogvind.dk/5947351006325',
+     type: 'groupchat',
+     from: 'jabba@conference.komogvind.dk/admin' },
+  children: 
+   [ { name: 'body',
+       parent: [Circular],
+       attrs: [Object],
+       children: [Object] },
+     { name: 'delay',
+       parent: [Circular],
+       attrs: [Object],
+       children: [] },
+     { name: 'x', parent: [Circular], attrs: [Object], children: [] } ] }
+{ name: 'message',
+  parent: 
+   { name: 'body',
+     parent: null,
+     attrs: { xmlns: 'http://jabber.org/protocol/httpbind' },
+     children: 
+      [ [Object],
+        [Object],
+        [Object],
+        [Object],
+        [Object],
+        [Circular],
+        [Object] ] },
+  attrs: 
+   { xmlns: 'jabber:client',
+     to: 'robert@komogvind.dk/5947351006325',
+     type: 'groupchat',
+     from: 'jabba@conference.komogvind.dk/robert' },
+  children: 
+   [ { name: 'body',
+       parent: [Circular],
+       attrs: [Object],
+       children: [Object] },
+     { name: 'delay',
+       parent: [Circular],
+       attrs: [Object],
+       children: [] },
+     { name: 'x', parent: [Circular], attrs: [Object], children: [] } ] }
+{ name: 'message',
+  parent: 
+   { name: 'body',
+     parent: null,
+     attrs: { xmlns: 'http://jabber.org/protocol/httpbind' },
+     children: 
+      [ [Object],
+        [Object],
+        [Object],
+        [Object],
+        [Object],
+        [Object],
+        [Circular] ] },
+  attrs: 
+   { xmlns: 'jabber:client',
+     to: 'robert@komogvind.dk/5947351006325',
+     type: 'groupchat',
+     from: 'jabba@conference.komogvind.dk/robert' },
+  children: 
+   [ { name: 'body',
+       parent: [Circular],
+       attrs: [Object],
+       children: [Object] },
+     { name: 'delay',
+       parent: [Circular],
+       attrs: [Object],
+       children: [] },
+     { name: 'x', parent: [Circular], attrs: [Object], children: [] } ] }
+{ name: 'iq',
+  parent: 
+   { name: 'body',
+     parent: null,
+     attrs: { xmlns: 'http://jabber.org/protocol/httpbind' },
+     children: [ [Circular] ] },
+  attrs: 
+   { xmlns: 'jabber:client',
+     to: 'robert@komogvind.dk/5947351006325',
+     from: 'user.komogvind.dk',
+     id: '1000',
+     type: 'result' },
+  children: 
+   [ { name: 'query',
+       parent: [Circular],
+       attrs: [Object],
+       children: [Object] } ] }

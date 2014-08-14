@@ -1,0 +1,6 @@
+{
+    "commands" : {
+        "plant_flag"  : "node %SERVICE_DIRECTORY%/client/client.js --plant %FLAGID% %FLAG% http://%HOST%:7070/http-bind/ http://%HOST%/auth.php",
+        "check_flag"  : "node %SERVICE_DIRECTORY%/client/client.js --check %FLAGID% %FLAG% http://%HOST%:7070/http-bind/ http://%HOST%/auth.php"
+    }
+}

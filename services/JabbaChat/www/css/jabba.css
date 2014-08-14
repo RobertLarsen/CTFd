@@ -1,0 +1,91 @@
+.hidden {
+    display: none;
+}
+
+#chat {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    font-size: 28px;
+}
+#chat h1 {
+    font-size: 35px;
+}
+
+#header {
+    background-image: url('images/jabba.png');
+    background-position: left;
+    background-repeat: no-repeat;
+    position: absolute;
+    top: 0px;
+    height: 65px;
+    left: 0px;
+    right: 0px;
+    text-align: center;
+}
+
+#text {
+    border: 1px solid black;
+    position: absolute;
+    top: 65px;
+    bottom: 40px;
+    left: 0px;
+    right: 310px;
+    padding: 5px;
+    overflow: auto;
+}
+
+#users {
+    border: 1px solid black;
+    position: absolute;
+    top: 65px;
+    bottom: 40px;
+    right: 0px;
+    width: 300px;
+    overflow: auto;
+    padding: 5px;
+}
+
+#input {
+    position: absolute;
+    height: 40px;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
+}
+
+#input input[type="text"] {
+    position: absolute;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+}
+
+.user_event {
+    color: green;
+}
+
+.chat_event {
+}
+
+.chatter {
+    display: inline;
+    font-weight: bold;
+}
+
+.role_moderator {
+    font-weight: bold;
+}
+
+.role_participator {
+}
+
+.gender_0 {
+    color: blue;
+}
+
+.gender_1 {
+    color: red;
+}

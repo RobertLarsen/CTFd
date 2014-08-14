@@ -1,0 +1,24 @@
+body {
+    background-color: black;
+    background-image: url('Morpheus.jpg');
+    background-repeat: no-repeat;
+    background-position: top center;
+}
+
+.pill {
+    position: absolute;
+    top: 568px;
+    margin: 5px;
+    font-size: 50px;
+    font-weight: bold;
+}
+
+.red {
+    left: 50%;
+    color: red;
+}
+
+.blue {
+    right: 50%;
+    color: blue;
+}
