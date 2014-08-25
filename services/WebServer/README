@@ -58,16 +58,16 @@ Install
 
 4) Install needed packages
 
- # apt-get -y install libssl-dev g++
+ # apt-get -y install libssl-dev g++ make
  ......
  #
 
 5) Build and install Node.js
 
  # cd /usr/src
- # wget -q http://nodejs.org/dist/node-v0.4.12.tar.gz
- # tar xfz node-v0.4.12.tar.gz
- # cd node-v0.4.12/
+ # wget -q http://nodejs.org/dist/v0.10.31/node-v0.10.31.tar.gz
+ # tar xfz node-v0.10.31.tar.gz
+ # cd node-v0.10.31/
  # ./configure --prefix=/usr/local && make && make install
  ......
  #
