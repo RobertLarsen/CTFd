@@ -82,6 +82,7 @@ Install
 7) Add user for service
 
  # useradd --system --home /var/services/YellowPages --shell /bin/false yellow
+ # chown -R yellow.yellow .
 
 8) Add init script
 
