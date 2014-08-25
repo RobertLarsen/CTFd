@@ -29,7 +29,7 @@ running the server can read can be read through the service. Also the server sup
 CGI execution which together with the directory traversal vulnerability can execute any program
 with the privileges of the server. For instance, the following URL lists the content of the root
 directory:
-'http://192.168.122.101:8080/cgi-bin/../../../../../../ls?-l&/'
+'http://192.168.122.101:8080/cgi-bin/../../../../../../bin/ls?-l&/'
 
 Fix
 ---
