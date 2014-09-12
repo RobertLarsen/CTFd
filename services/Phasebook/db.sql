@@ -6,7 +6,7 @@ drop table if exists users;
 create table `users`(
     id int primary key auto_increment,
     username varchar(32) unique,
-    password varchar(32),
+    password varchar(64),
     gender tinyint
 );
 
