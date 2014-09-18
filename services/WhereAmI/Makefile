@@ -3,6 +3,7 @@ LDFLAGS=-lm -lsqlite3
 
 whereami: src/*.c
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	execstack -s $@
 
 points: points.c
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)

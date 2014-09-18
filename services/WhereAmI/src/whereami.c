@@ -14,7 +14,6 @@
 #include <signal.h>
 #include <unistd.h>
 #include <string.h>
-#include "rlmalloc.h"
 
 #define DATABASE "whereami.sqlite3"
 #define NAME_MAX 16
@@ -214,7 +213,7 @@ static char ** split(buffer_t * buffer) {
         range.begin = range.end + 1;
     }
 
-    argv = rlmalloc((count + 1) * sizeof(char*));
+    argv = malloc((count + 1) * sizeof(char*));
     count = range.begin = 0;
 
     while (next_range(buffer, &range)) {
@@ -446,7 +445,7 @@ static void handle_client(client_t * client) {
             if (handle_client_state(client, cmd, count_args(argv), argv) == 0) {
                 dprintf(client->socket, "Bad command or arguments.\n");
             }
-            rlfree(argv);
+            free(argv);
         }
         empty_buffer(&buffer);
     }
@@ -667,7 +666,7 @@ int main(int argc, char const *argv[]) {
     for (b = a; *b; b++) {
         printf("'%s'\n", *b);
     }
-    rlfree(a);
+    free(a);
 
     return 0;
 }
@@ -685,7 +684,7 @@ int main(int argc, char const *argv[]) {
     server = create_server(argc > 1 ? atoi(argv[1]) : 8181);
     while (1) {
 
-        client = rlmalloc(sizeof(client_t));
+        client = malloc(sizeof(client_t));
         memset(client, 0, sizeof(client_t));
         client->state = NEW;
 
@@ -696,14 +695,14 @@ int main(int argc, char const *argv[]) {
         if (pid) {
             /* Parent */
             close(client->socket);
-            rlfree(client);
+            free(client);
         } else {
             /* Child */
             srand(time(NULL) ^ getpid());
             close(server);
             handle_client(client);
             close(client->socket);
-            rlfree(client);
+            free(client);
             exit(0);
         }
     }
