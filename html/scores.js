@@ -29,9 +29,19 @@ $(function() {
                      );
                 });
 
-                _.chain(data.table).keys().forEach(function(team) {
-                    var entry = data.table[team];
-                    tableData += '<tr>' + T(team) + T(entry.deliver) + T(entry.defend) + T(entry.check) + T(entry.capture) + T(entry.challenge) + T(entry.points) + '</tr>';
+                _.chain(data.table)
+                 .keys()
+                 .map(function(team) {
+                     return {
+                         name : team,
+                         data : data.table[team]
+                     };
+                 })
+                 .sort(function(t1, t2) {
+                     return t2.data.points - t1.data.points;
+                 })
+                 .forEach(function(team) {
+                    tableData += '<tr>' + T(team.name) + T(team.data.deliver) + T(team.data.defend) + T(team.data.check) + T(team.data.capture) + T(team.data.challenge) + T(team.data.points) + '</tr>';
                 });
 
                 $('.table_scores tbody').html(tableData);
