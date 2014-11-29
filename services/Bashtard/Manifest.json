@@ -1,0 +1,6 @@
+{
+    "commands" : {
+        "plant_flag"  : "python %SERVICE_DIRECTORY%/check_bashtard.py -p %HOST% 9898 %FLAGID% %FLAG%",
+        "check_flag"  : "python %SERVICE_DIRECTORY%/check_bashtard.py -c %HOST% 9898 %FLAGID% %FLAG%"
+    }
+}

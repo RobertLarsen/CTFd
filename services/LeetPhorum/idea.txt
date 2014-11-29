@@ -1,0 +1,1 @@
+It is possible to make the database authenticate against an external attacker controlled database. This sets a session containing the authenticated user id and type after which the attacker can do anything in the forum.

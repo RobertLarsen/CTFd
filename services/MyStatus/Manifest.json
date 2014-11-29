@@ -1,0 +1,6 @@
+{
+    "commands" : {
+        "plant_flag"  : "python %SERVICE_DIRECTORY%/check_mystatus.py -p http://%HOST%/mystatus/ %FLAGID% %FLAG%",
+        "check_flag"  : "python %SERVICE_DIRECTORY%/check_mystatus.py -c http://%HOST%/mystatus/ %FLAGID% %FLAG%"
+    }
+}

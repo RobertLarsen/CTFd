@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+
+<project name="Wizard" default="jar">
+    <description>
+        Wizard CTF service
+    </description>
+    <property name="dir.dist" value="compiled"/>
+    <property name="dir.build" value="build"/>
+    <property name="dir.source" value="src"/>
+    <property name="file.jar.name" value="wizard.jar"/>
+    <property name="file.jar" value="${dir.dist}/${file.jar.name}"/>
+    <property name="compile.debuglevel" value="lines,vars,source"/>
+    <property name="compile.debugging" value="on"/>
+
+    <target name="init">
+        <mkdir dir="${dir.dist}"/>
+        <mkdir dir="${dir.build}"/>
+    </target>
+
+    <target name="compile" depends="init">
+        <javac debuglevel="${compile.debuglevel}"
+               debug="${compile.debugging}"
+               destdir="${dir.build}"
+               includeantruntime="false">
+            <compilerarg value="-Xlint"/>
+            <src path="${dir.source}"/>
+            <include name="**/*.java"/>
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile">
+        <jar destfile="${file.jar}">
+            <fileset casesensitive="false" dir="${dir.build}" includes="**/*.class"/>
+            <manifest>
+                <attribute name="Main-class" value="Ob.Wizard"/>
+                <attribute name="Note" value="The protocol is broken...no way it can be fixed without sacrificing backwards compatibility. But how is the service actually being used? Find out and reshape the protocol from that."/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="run" depends="jar">
+        <java fork="true" jar="${file.jar}"/>
+    </target>
+</project>

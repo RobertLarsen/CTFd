@@ -1,0 +1,6 @@
+{
+    "commands" : {
+        "plant_flag"  : "python %SERVICE_DIRECTORY%/check_wizard.py -p %HOST% 31415 %FLAGID% %FLAG%",
+        "check_flag"  : "python %SERVICE_DIRECTORY%/check_wizard.py -c %HOST% 31415 %FLAGID% %FLAG%"
+    }
+}

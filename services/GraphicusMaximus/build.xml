@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+
+<project name="GraphicusMaximus" default="jar">
+    <description>
+        GraphicusMaximus CTF service
+    </description>
+    <taskdef resource="net/sf/antcontrib/antlib.xml"/>
+    <property name="dir.dist" value="compiled"/>
+    <property name="dir.build" value="build"/>
+    <property name="dir.source" value="src"/>
+    <property name="dir.libraries" value="third-party"/>
+    <property name="dir.temp" value="__TEST__"/>
+    <property name="file.jar.name" value="graphicus_maximus.jar"/>
+    <property name="file.jar" value="${dir.dist}/${file.jar.name}"/>
+    <property name="compile.debuglevel" value="lines,vars,source"/>
+    <property name="compile.debugging" value="on"/>
+
+    <path id="compile.classpath">
+        <fileset dir="${dir.libraries}">
+            <include name="**/*.jar"/>
+        </fileset>
+        <path location="${dir.build}"/>
+        <path location="${dir.media}"/>
+    </path>
+
+    <target name="init">
+        <mkdir dir="${dir.dist}"/>
+        <mkdir dir="${dir.build}"/>
+    </target>
+
+    <target name="compile" depends="init">
+        <javac debuglevel="${compile.debuglevel}"
+               debug="${compile.debugging}"
+               destdir="${dir.build}"
+               includeantruntime="false">
+            <compilerarg value="-Xlint"/>
+            <classpath refid="compile.classpath"/>
+            <src path="${dir.source}"/>
+            <include name="**/*.java"/>
+        </javac>
+    </target>
+
+    <target name="unpack_jar_file">
+        <exec dir="${dir.temp}" executable="jar">
+            <arg line="xf ${jar_file_param}"/>
+        </exec>
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${dir.temp}"/>
+        <foreach param="jar_file_param" target="unpack_jar_file">
+            <path>
+                <fileset dir="${dir.libraries}">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </path>
+        </foreach>
+        <jar destfile="${file.jar}">
+            <fileset casesensitive="false" dir="${dir.build}" includes="**/*.class"/>
+            <fileset casesensitive="false" dir="${dir.temp}" includes="**/*"/>
+            <manifest>
+                <attribute name="Main-class" value="GraphicusMaximus"/>
+            </manifest>
+        </jar>
+        <delete dir="${dir.temp}"/>
+    </target>
+
+    <target name="run" depends="jar">
+        <java fork="true" jar="${file.jar}"/>
+    </target>
+</project>

@@ -1,0 +1,6 @@
+{
+    "commands" : {
+        "plant_flag"  : "python %SERVICE_DIRECTORY%/check_leet.py --plant http://%HOST%/leet/ %FLAGID% %FLAG%",
+        "check_flag"  : "python %SERVICE_DIRECTORY%/check_leet.py --check http://%HOST%/leet/ %FLAGID% %FLAG%"
+    }
+}

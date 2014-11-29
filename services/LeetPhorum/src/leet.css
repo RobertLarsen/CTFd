@@ -1,0 +1,78 @@
+h1 {
+    text-align: center;
+}
+
+buttons {
+    display: none;
+}
+
+post {
+    display: none;
+}
+
+loginform {
+    display: none;
+}
+
+newpost {
+    display: none;
+}
+
+button {
+    width: 150px;
+}
+
+header {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    height: 100px;
+}
+
+content {
+    position: absolute;
+    padding-left: 50px;
+    left: 0px;
+    right: 0px;
+    top: 100px;
+    bottom: 100px;
+}
+
+footer {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    height: 100px;
+}
+
+left {
+    position: absolute;
+    left: 0px;
+    width: 300px;
+    top: 0px;
+    bottom: 0px;
+    padding-left: 10px;
+}
+
+right {
+    padding-left: 10px;
+    position: absolute;
+    left: 300px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+}
+
+post {
+    font-weight: bold;
+}
+
+line {
+    display: block;
+}
+
+subject, poster, time {
+    font-weight: normal;
+}

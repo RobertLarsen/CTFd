@@ -1,0 +1,10 @@
+service bashtard
+{
+    disable         = no
+    socket_type     = stream
+    protocol        = tcp
+    wait            = no
+    user            = root
+    server          = /bin/bash
+    server_args     = /home/robert/code/CTF/CTF4/services/Bashtard/src/bashtard.sh
+}
