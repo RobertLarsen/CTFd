@@ -16,8 +16,5 @@
       "choreographer" : "",
       "mongojs" : ""
   },
-  "devDependencies": {
-      "expresso" : "0.9.2"
-  },
   "optionalDependencies": {}
 }
