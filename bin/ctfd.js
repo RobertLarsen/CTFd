@@ -1,6 +1,8 @@
+console.log("Starting up")
+
 var repl = require('repl'),
     ctfd = require('../index');
-    fs = require('fs'),
+fs = require('fs'),
     conf = JSON.parse(
         fs.readFileSync(process.argv.length > 2 ? 
             process.argv[2] : 'config.js', 'utf-8')

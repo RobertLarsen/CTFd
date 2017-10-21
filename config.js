@@ -9,7 +9,7 @@
     "database" : "ctfd",
     "start" : false,
     "check_interval" : 2000,
-    "plant_interval" : 10000,
+    "plant_interval" : 30000,
     "points" : {
         "deliver" : 1,
         "capture" : 2,
